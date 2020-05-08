@@ -16,14 +16,14 @@ iamRoleStatements:
       - "s3:ListBucket"
       - "s3:PutObject"
       - "s3:GetObject"
-    Resource: ${self.custom.bucketName}
+    Resource: ${self:custom.bucketName}
 
 functions:
   convert:
     handler: convert.handler
     events:
       - s3:
-        bucket: ${self.custom.bucketName}
+        bucket: ${self:custom.bucketName}
         event: s3:ObjectCreated:*
         rules:
           - prefix: uploads/
@@ -34,4 +34,4 @@ resources:
       Type: AWS::S3::Bucket
       DeletionPolicy: Retain
       Properties:
-        BucketName: ${self.custom.bucketName}
+        BucketName: ${self:custom.bucketName}
