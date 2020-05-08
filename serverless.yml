@@ -20,7 +20,7 @@ iamRoleStatements:
 
 functions:
   convert:
-    handler: convert.handler
+    handler: handler.convert
     events:
       - s3:
         bucket: ${self:custom.bucketName}

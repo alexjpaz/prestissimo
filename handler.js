@@ -1,18 +1,13 @@
-'use strict';
+// FIXME - Hacky!
+process.env.PATH = `${process.env.LAMBDA_TASK_ROOT || './'}/opt`;
 
-module.exports.hello = async event => {
-  return {
-    statusCode: 200,
-    body: JSON.stringify(
-      {
-        message: 'Go Serverless v1.0! Your function executed successfully!',
-        input: event,
-      },
-      null,
-      2
-    ),
-  };
+const { convert } = require('./convert');
 
-  // Use this code if you don't use the http event with the LAMBDA-PROXY integration
-  // return { message: 'Go Serverless v1.0! Your function executed successfully!', event };
+module.exports.convert = async (event, context) => {
+  try {
+    await convert(event, context);
+  } catch(e) {
+    console.error(e);
+    throw e;
+  }
 };
