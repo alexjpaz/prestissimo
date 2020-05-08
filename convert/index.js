@@ -19,6 +19,7 @@ module.exports.convert = async (event, context) => {
   });
 
   return {
+    event,
     data,
     exitCode,
     error,
