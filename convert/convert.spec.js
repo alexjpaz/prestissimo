@@ -10,6 +10,11 @@ const s3 = new AWS.S3();
 
 describe('convert', () => {
   before(async () => {
+    await s3.deleteObject({
+      Bucket: config.awsBucket,
+      Key: 'test/test-key',
+    }).promise();
+
     await s3.createBucket({
       Bucket: config.awsBucket
     }).promise();
@@ -42,7 +47,7 @@ describe('convert', () => {
 
     const rsp = await s3.headObject({
       Bucket: config.awsBucket,
-      Key: 'test/test-key',
+      Key: 'test/test-key/out.mkv',
     }).promise();
 
     expect(rsp.ContentLength).to.be.above(0);

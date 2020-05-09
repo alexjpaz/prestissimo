@@ -126,7 +126,7 @@ const convertAndUpload = async (Record) => {
 
         await s3.putObject({
           Bucket: config.awsBucket,
-          Key: `test/${Record.s3.object.key}`,
+          Key: `test/${Record.s3.object.key}/${format}`,
           ContentType: 'video/mkv',
           Body: await outputFile.read(),
         }).promise();
