@@ -23,4 +23,4 @@ functions:
           bucket: ${self:custom.bucketName}
           event: s3:ObjectCreated:*
           rules:
-            - prefix: uploads/
+            - prefix: uploads/raw/
