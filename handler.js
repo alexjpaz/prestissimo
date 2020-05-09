@@ -1,5 +1,7 @@
-// FIXME - Hacky!
-process.env.PATH = `${process.env.LAMBDA_TASK_ROOT || './'}/opt`;
+if(process.env.LAMBDA_TASK_ROOT) {
+  // FIXME - Hacky!
+  process.env.PATH = `${process.env.LAMBDA_TASK_ROOT || './'}/opt`;
+}
 
 const { logger } = require('./utils/logger');
 

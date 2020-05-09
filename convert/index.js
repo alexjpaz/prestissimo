@@ -1,3 +1,5 @@
+const config = require('config');
+
 const { spawn } = require('child_process');
 const { promisify } = require('util');
 const { pipeline } = require('stream');
@@ -6,38 +8,70 @@ const os = require('os');
 const fsp = require('fs').promises;
 const path = require('path');
 
-const AWS = require('aws-sdk');
+const { logger } = require('../utils/logger');
 
-const s3 = new AWS.S3({
-  region: 'us-east-1'
-});
+const AWS = require('../utils/aws');
+
+const s3 = new AWS.S3();
+
+const createTempFile = async (name = Math.random().toString()) => {
+  const handler = {};
+
+  const tempPath = path.join(os.tmpdir());
+  const outputDir = await fsp.mkdtemp(tempPath);
+  const outputPath = path.join(outputDir,  name);
+
+  handler.path = outputPath;
+
+  handler.cleanup = async () => {
+    try {
+      await fsp.unlink(outputPath);
+      logger.debug("Cleaned up tempFile", outputPath);
+    } catch(e) {
+      logger.warn("Failed to clean up tempFile", outputPath);
+      logger.error(e);
+    }
+  };
+
+  handler.write = async (data) => {
+    return await fsp.writeFile(outputPath, data);
+  };
+
+  handler.read = async (data) => {
+    return await fsp.readFile(outputPath);
+  };
+
+  await handler.write(Buffer.alloc(0));
+
+  return handler;
+};
 
 const cacheObjectToFilesystem = async (inputRecord) => {
-  const tempPath = path.join(os.tmpdir(), 'convert-');
-  const outputDir = await fsp.mkdtemp(tempPath);
+  const tempFile = await createTempFile();
 
-  console.log("Caching object", inputRecord.s3.bucket.name, inputRecord.s3.object.key);
+  logger.info("Caching object", inputRecord.s3.bucket.name, inputRecord.s3.object.key);
+
   const rsp = await s3.getObject({
     Bucket: inputRecord.s3.bucket.name,
     Key: inputRecord.s3.object.key,
   }).promise();
 
-  const outputPath = path.join(outputDir,  "step1");
+  await tempFile.write(rsp.Body);
 
-  await fsp.writeFile(outputPath, rsp.Body);
-
-  return {
-    outputPath
-  };
+  return tempFile;
 };
 
-const ffmpeg = async (inputFile, outputFile) => {
-  console.log(inputFile, outputFile);
-  const child = spawn('ffmpeg', [
+const ffmpeg = async (inputFile, outputFile, args = []) => {
+  const ffmpegArgs = [
     '-y',
-    '-i', inputFile,
-    '/tmp/foo.mkv'
-  ]);
+    '-i', inputFile.path,
+    outputFile.path,
+    ...args
+  ];
+
+  logger.info('Spawning ffmpeg with args', args.join(' '));
+
+  const child = spawn('ffmpeg', ffmpegArgs);
 
   let data = ""
 
@@ -46,13 +80,17 @@ const ffmpeg = async (inputFile, outputFile) => {
   }
 
   let error = "";
-  for await (const chunk of child.stdout) {
+  for await (const chunk of child.stderr) {
     error += chunk;
   }
 
   const exitCode = await new Promise( (resolve, reject) => {
     child.on('close', resolve);
   });
+
+  if(exitCode !== 0) {
+    logger.warn("ffmpeg exited with non-zero status", data, error);
+  }
 
   return {
     data,
@@ -62,29 +100,45 @@ const ffmpeg = async (inputFile, outputFile) => {
 
 };
 
-module.exports.convert = async (event, context) => {
-  // FIXME - It is just the first object for now
-  const Record = event.Records[0];
-
-  const { outputPath } = await cacheObjectToFilesystem(Record);
+const convertAndUpload = async (Record) => {
+  const inputFile = await cacheObjectToFilesystem(Record);
+  const outputFile = await createTempFile("out.mkv"); // TODO
 
   try {
-    console.log('converting');
-    const rsp = await ffmpeg(outputPath, "/tmp/foo.mkv");
+    logger.info('Converting record');
 
-    // FIXME
-    console.log('UPLOADING');
+    const rsp = await ffmpeg(inputFile, outputFile);
+
+    if(rsp.exitCode !== 0) {
+      throw new Error("Failed to convert object: ExitCode=" + rsp.exitCode);
+    }
+
+    logger.log('Uploading converted object');
+
     await s3.putObject({
-      Bucket: "prestissimo-dev",
+      Bucket: config.awsBucket,
       Key: `test/${Record.s3.object.key}`,
-      Body: await fsp.readFile("/tmp/foo.mkv")
+      ContentType: 'video/mkv',
+      Body: await outputFile.read(),
     }).promise();
 
-    console.log('done');
   } catch(e) {
-    console.error(e);
     throw e;
   } finally {
-    await fsp.unlink(outputPath);
+    await inputFile.cleanup();
+    await outputFile.cleanup();
   }
- };
+
+  logger.log('Sucessfully converted and uploaded object');
+};
+
+module.exports.convert = async (event, context) => {
+  for(let Record of event.Records) {
+    try {
+      await convertAndUpload(Record);
+    } catch(e) {
+      logger.error(e);
+      throw e;
+    }
+  }
+};
