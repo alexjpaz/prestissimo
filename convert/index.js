@@ -102,31 +102,46 @@ const ffmpeg = async (inputFile, outputFile, args = []) => {
 
 const convertAndUpload = async (Record) => {
   const inputFile = await cacheObjectToFilesystem(Record);
-  const outputFile = await createTempFile("out.mkv"); // TODO
+
+  // FIXME
+  const formats = [
+    "out.wav",
+    "out.mkv",
+  ];
 
   try {
     logger.info('Converting record');
 
-    const rsp = await ffmpeg(inputFile, outputFile);
+    const tasks = formats.map(async (format) => {
+      const outputFile = await createTempFile(format); // TODO
 
-    if(rsp.exitCode !== 0) {
-      throw new Error("Failed to convert object: ExitCode=" + rsp.exitCode);
-    }
+      try {
+        const rsp = await ffmpeg(inputFile, outputFile);
 
-    logger.log('Uploading converted object');
+        if(rsp.exitCode !== 0) {
+          throw new Error("Failed to convert object: ExitCode=" + rsp.exitCode);
+        }
 
-    await s3.putObject({
-      Bucket: config.awsBucket,
-      Key: `test/${Record.s3.object.key}`,
-      ContentType: 'video/mkv',
-      Body: await outputFile.read(),
-    }).promise();
+        logger.log('Uploading converted object');
+
+        await s3.putObject({
+          Bucket: config.awsBucket,
+          Key: `test/${Record.s3.object.key}`,
+          ContentType: 'video/mkv',
+          Body: await outputFile.read(),
+        }).promise();
+
+      } finally {
+        await outputFile.cleanup();
+      }
+    });
+
+    await Promise.all(tasks);
 
   } catch(e) {
     throw e;
   } finally {
     await inputFile.cleanup();
-    await outputFile.cleanup();
   }
 
   logger.log('Sucessfully converted and uploaded object');
