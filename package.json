@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "NODE_ENV=test mocha -t 60000 --exclude=node_modules/**/*  '**/*.spec.js'"
+    "test": "NODE_ENV=test mocha -t 60000 --forbid-only --exclude='node_modules/**/*'  '**/*.spec.js'"
   },
   "repository": {
     "type": "git",
@@ -22,11 +22,14 @@
     "mocha": "^7.1.2",
     "serverless": "^1.70.0",
     "serverless-offline": "^6.1.5",
-    "sinon": "^9.0.2"
+    "sinon": "^9.0.2",
+    "supertest": "^4.0.2"
   },
   "dependencies": {
     "config": "^3.3.1",
+    "express": "^4.17.1",
     "js-yaml": "^3.13.1",
-    "pino": "^6.2.1"
+    "pino": "^6.2.1",
+    "serverless-http": "^2.4.1"
   }
 }

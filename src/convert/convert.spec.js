@@ -9,7 +9,7 @@ const AWS = require('../utils/aws');
 const s3 = new AWS.S3();
 
 describe('convert', () => {
-  before(async () => {
+  beforeEach(async () => {
     await s3.deleteObject({
       Bucket: config.awsBucket,
       Key: 'test/test-key',
@@ -26,7 +26,7 @@ describe('convert', () => {
     }).promise();
   });
 
-  it.only('should process an s3 event', async () => {
+  it('should process an s3 event', async () => {
     // https://docs.aws.amazon.com/lambda/latest/dg/with-s3.html
     const event = {
       Records: [

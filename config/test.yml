@@ -2,4 +2,4 @@
 awsEndpoint: http://localhost:4566
 awsBucket: 'test-bucket.localhost'
 logger:
-  level: info
+  level: silent

@@ -10,5 +10,5 @@ const logger = require('pino')(Object.assign({
 
 logger.info("Pino logger initialized");
 
-//module.exports.logger = logger;
-module.exports.logger = console;
+module.exports.logger = logger;
+//module.exports.logger = console;

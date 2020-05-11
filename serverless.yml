@@ -16,6 +16,10 @@ plugins:
   - serverless-offline
 
 functions:
+  httpRouter:
+    handler: handler.http
+    events:
+      - httpApi: '*'
   convert:
     handler: handler.convert
     events:
