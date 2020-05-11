@@ -29,6 +29,7 @@
     "config": "^3.3.1",
     "express": "^4.17.1",
     "js-yaml": "^3.13.1",
+    "multer": "^1.4.2",
     "pino": "^6.2.1",
     "serverless-http": "^2.4.1"
   }

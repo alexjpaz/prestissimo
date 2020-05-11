@@ -17,7 +17,7 @@ plugins:
 
 functions:
   httpRouter:
-    handler: handler.http
+    handler: handler.http.router
     events:
       - httpApi: '*'
   convert:
