@@ -1,3 +1,4 @@
 ---
+awsBucket: awsBucket
 logger:
   level: LOGGER_LEVEL
