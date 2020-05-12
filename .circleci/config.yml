@@ -5,6 +5,9 @@ jobs:
   build-and-test:
     docker:
       - image: circleci/node:13
+        environment:
+          AWS_ACCESS_KEY_ID: localstack
+          AWS_SECRET_ACCESS_KEY: localstack
       - image: localstack/localstack
         environment:
           DEBUG: 1
