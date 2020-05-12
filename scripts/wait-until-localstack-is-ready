@@ -3,8 +3,8 @@ process.env.NODE_ENV = 'test';
 
 const logger = console;
 
+const supertest = require('supertest');
 const AWS = require('../src/utils/aws');
-
 
 const aSecond = (t = 1000) => new Promise((r) => setTimeout(r, t));
 
@@ -34,21 +34,35 @@ const waitForS3 = () => {
     return waitFor(async () => {
         logger.info("Attempting to connect to s3");
         await s3.listBuckets().promise();
+        logger.info("Connected to s3");
+    });
+};
+
+const waitForS3Request = () => {
+    return waitFor(async () => {
+        logger.info("Attempting to connect to s3 via http");
+        await supertest(AWS.config.endpoint).get('/')
+            .expect(404, /running/);
+        ;
+        logger.info("Success");
     });
 };
 
 const wait = async () => {
     const promises = [
         waitForS3(),
+        waitForS3Request()
     ];
 
     await new Promise((res, rej) => {
-        setTimeout(() => rej("Timeout"), 1000 * 60);
+        const timeoutId = setTimeout(() => rej("Timeout"), 1000 * 60);
 
         Promise.all(promises)
             .then(res)
             .catch(rej)
         ;
+
+        clearTimeout(timeoutId);
     });
 };
 
