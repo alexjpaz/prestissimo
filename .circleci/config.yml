@@ -17,7 +17,7 @@ jobs:
             - run: npm install
             - run: npm run postinstall:download-dependencies
             - run: curl http://localhost:4566
-            - run: ./scripts/wait-until-localstack-is-ready
+            #- run: ./scripts/wait-until-localstack-is-ready
             - run: npm test
             - run: npm run serverless:package
 workflows:
