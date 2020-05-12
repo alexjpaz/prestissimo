@@ -3,21 +3,24 @@ orbs:
   node: circleci/node@1.1.6
 jobs:
   build-and-test:
+    docker:
+      - image: circleci/node:13
+        environment:
+          AWS_ACCESS_KEY_ID: localstack
+          AWS_SECRET_ACCESS_KEY: localstack
+      - image: localstack/localstack
+        environment:
+          DEBUG: 1
+          SERVICES: s3,sqs
     executor:
       name: node/default
     steps:
       - checkout
       - node/with-cache:
           steps:
+            - run: echo 'export PATH=./opt/:$PATH' >> $BASH_ENV
             - run: npm install
-            - run: npm run postinstall:download-dependencies
-            - setup_remote_docker
-            - run: docker-compose up -d
             - run: npm test
-            - run:
-               name: docker-compose down
-               command: docker-compose down -f
-               when: always
             - run: npm run serverless:package
 workflows:
     build-and-test:

@@ -1,0 +1,38 @@
+#!/usr/bin/env node
+process.env.NODE_ENV = 'test';
+
+const logger = console;
+
+const config = require('config');
+const AWS = require('../src/utils/aws');
+
+const provision = async () => {
+    const s3 = new AWS.S3();
+
+    try {
+        await s3.headBucket({
+            Bucket: config.awsBucket
+        }).promise();
+
+        logger.info("Bucket exists. Skipping");
+    } catch(e) {
+        logger.info("Creating bucket...");
+        await s3.createBucket({
+            Bucket: config.awsBucket
+        }).promise();
+        logger.info("Bucket created");
+    }
+};
+
+const main = async () => {
+  try {
+      logger.info("Provisioning localstack", AWS.config.endpoint);
+      await provision();
+      logger.info("Ready");
+  } catch(e) {
+      logger.error(e);
+      process.exit(1);
+  }
+};
+
+main();
