@@ -5,6 +5,7 @@ const logger = console;
 
 const AWS = require('../src/utils/aws');
 
+
 const aSecond = (t = 1000) => new Promise((r) => setTimeout(r, t));
 
 const waitFor = async (fn) => {
@@ -37,15 +38,22 @@ const waitForS3 = () => {
 
 const wait = async () => {
     const promises = [
-        await waitForS3(),
+        waitForS3(),
     ];
 
-    await Promise.all(promises);
+    await new Promise((res, rej) => {
+        setTimeout(() => rej("Timeout"), 1000 * 60);
+
+        Promise.all(promises)
+            .then(res)
+            .catch(rej)
+        ;
+    });
 };
 
 const main = async () => {
   try {
-      logger.info("Waiting for localstack");
+      logger.info("Waiting for localstack at", AWS.config.endpoint);
       await wait();
       logger.info("Ready");
   } catch(e) {
