@@ -1,0 +1,58 @@
+#!/usr/bin/env node
+process.env.NODE_ENV = 'test';
+
+const logger = console;
+
+const AWS = require('../src/utils/aws');
+
+const aSecond = (t = 1000) => new Promise((r) => setTimeout(r, t));
+
+const waitFor = async (fn) => {
+    let expiresAt = Date.now() + (1000 * 60);
+
+    let ready;
+
+    while(!ready) {
+        if(Date.now() >= expiresAt) {
+            throw new Error("Timeout exceeded");
+        }
+
+        try {
+            await fn();
+            ready = true;
+        } catch(e) {
+            process.stdout.write('.');
+            // logger.error(e);
+            await aSecond();
+        }
+    }
+};
+
+const waitForS3 = () => {
+    const s3 = new AWS.S3();
+
+    return waitFor(async () => {
+        await s3.listBuckets().promise();
+    });
+};
+
+const wait = async () => {
+    const promises = [
+        await waitForS3(),
+    ];
+
+    await Promise.all(promises);
+};
+
+const main = async () => {
+  try {
+      logger.info("Waiting for localstack");
+      await wait();
+      logger.info("Ready");
+  } catch(e) {
+      logger.error(e);
+      process.exit(1);
+  }
+};
+
+main();

@@ -1,12 +1,12 @@
 #!/bin/bash
 set -x
-#set -e
+set -e
 
 mkdir -p opt
 pushd opt
 
 
-curl -sL https://johnvansickle.com/ffmpeg/releases/ffmpeg-release-amd64-static.tar.xz | tar x
+curl -sL https://johnvansickle.com/ffmpeg/releases/ffmpeg-release-amd64-static.tar.xz | tar x -J
 find .
 cp $(find . -iname ffmpeg | head -1) ffmpeg
 cp $(find . -iname ffprobe | head -1) ffprobe
