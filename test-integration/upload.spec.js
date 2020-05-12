@@ -18,10 +18,10 @@ describe('upload', () => {
       .set('Content-Type', 'multipart/form-data')
       .type('form')
       .attach("file", "./test/Beachy.m4a")
-      .then((rsp) => console.log(rsp))
+      .expect((rsp) => {
+        console.log(rsp.text);
+      })
       .expect(201)
     ;
-
-    console.log(rsp);
   });
 });

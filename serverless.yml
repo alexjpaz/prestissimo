@@ -5,6 +5,7 @@ provider:
   runtime: nodejs12.x
   stage: ${opt:stage, 'dev'}
   environment:
+    foo: '123 '
     awsBucket: "${self:custom.bucketName}"
 
   iamRoleStatements:
