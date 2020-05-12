@@ -1,8 +1,11 @@
 version: 2.1
-orbs:
-  node: circleci/node@1.1.6
 jobs:
   build-and-test:
+    docker:
+      - image: circleci/node:13
+      - image: localstack/localstack
+        environment:
+          SERVICES: s3,sqs
     executor:
       name: node/default
     steps:
@@ -11,14 +14,8 @@ jobs:
           steps:
             - run: npm install
             - run: npm run postinstall:download-dependencies
-            - setup_remote_docker
-            - run: docker-compose up -d
             - run: ./scripts/wait-until-localstack-is-ready
             - run: npm test
-            - run:
-               name: docker-compose down
-               command: docker-compose down
-               when: always
             - run: npm run serverless:package
 workflows:
     build-and-test:
