@@ -43,9 +43,9 @@ workflows:
       jobs:
         - build-and-test
         - deploy:
-         requires:
-            - build-and-test
-         context: "aws.amazon.com/alexjpaz/circleci"
-         filters:
-           branches:
-            only: master
+            requires:
+               - build-and-test
+            context: "aws.amazon.com/alexjpaz/circleci"
+            filters:
+              branches:
+               only: master
