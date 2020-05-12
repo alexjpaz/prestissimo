@@ -21,7 +21,6 @@ const waitFor = async (fn) => {
             await fn();
             ready = true;
         } catch(e) {
-            process.stdout.write('.');
             logger.error(e);
             await aSecond();
         }
