@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "postinstall:download-dependencies": "./scripts/download-dependencies.sh",
-    "test": "NODE_ENV=test mocha -t 60000 --forbid-only --exclude='node_modules/**/*'  '**/*.spec.js'",
+    "test": "NODE_ENV=test mocha -t 20000 --forbid-only --exclude='node_modules/**/*'  '**/*.spec.js'",
     "serverless:package": "serverless package"
   },
   "repository": {
