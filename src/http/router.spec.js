@@ -30,6 +30,20 @@ describe('http/router', () => {
     fs.unlink.restore();
   });
 
+  describe('public', () => {
+    it('index', async () => {
+      await request.get('/index.html')
+        .expect(200, /<html>/);
+      ;
+    });
+
+    it('root', async () => {
+      await request.get('/index.html')
+        .expect(200, /<html>/);
+      ;
+    });
+  });
+
   describe('upload', () => {
     it('m4a file', async () => {
       await request.post('/upload')

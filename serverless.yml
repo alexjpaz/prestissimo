@@ -17,9 +17,14 @@ plugins:
 
 functions:
   httpRouter:
-    handler: handler.http.router
+    handler: src/http/index.router
     events:
-      - httpApi: '*'
+      - http:
+          path: "{proxy+}"
+          method: any
+      - http:
+          path: "/"
+          method: any
   convert:
     handler: handler.convert
     events:

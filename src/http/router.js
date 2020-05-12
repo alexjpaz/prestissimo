@@ -20,12 +20,15 @@ const Router = (props = defaultProps()) => {
 
   const upload = multer({ dest: os.tmpdir() })
 
+  app.use(express.static('public'))
+
   app.post('/upload', upload.array('file', 10), async (req, res, next) => {
     try {
 
       const promises = req.files
         .map(async (file) => {
           try {
+            logger.info({ file }, "recieved file");
             await s3.putObject({
               Bucket: config.awsBucket,
               Key: `uploads/raw/${file.filename}/${file.originalname}`,
