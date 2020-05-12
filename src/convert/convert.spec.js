@@ -14,11 +14,6 @@ describe('convert', () => {
       Bucket: config.awsBucket,
       Key: 'test/test-key',
     }).promise();
-
-    await s3.createBucket({
-      Bucket: config.awsBucket
-    }).promise();
-
     await s3.putObject({
       Bucket: config.awsBucket,
       Key: 'test-key',
