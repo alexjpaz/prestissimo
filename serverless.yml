@@ -4,6 +4,8 @@ provider:
   name: aws
   runtime: nodejs12.x
   stage: ${opt:stage, 'dev'}
+  deploymentBucket:
+    name: shared-private-bucket.alexjpaz.com
   environment:
     foo: '123 '
     awsBucket: "${self:custom.bucketName}"
