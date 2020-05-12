@@ -1,5 +1,5 @@
 ---
-awsEndpoint: http://localhost:4566
+awsEndpoint: http://127.0.0.1:4566
 awsBucket: 'test-bucket.localhost'
 logger:
   level: silent
