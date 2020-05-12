@@ -11,6 +11,7 @@ jobs:
           steps:
             - run: npm install
             - run: npm run postinstall:download-dependencies
+            - setup_remote_docker
             - run: docker-compose up -d
             - run: npm test
             - run:
