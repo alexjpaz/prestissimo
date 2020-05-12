@@ -8,9 +8,20 @@ const AWS = require('../src/utils/aws');
 
 const provision = async () => {
     const s3 = new AWS.S3();
-    await s3.createBucket({
-        Bucket: config.awsBucket
-    }).promise();
+
+    try {
+        await s3.headBucket({
+            Bucket: config.awsBucket
+        }).promise();
+
+        logger.info("Bucket exists. Skipping");
+    } catch(e) {
+        logger.info("Creating bucket...");
+        await s3.createBucket({
+            Bucket: config.awsBucket
+        }).promise();
+        logger.info("Bucket created");
+    }
 };
 
 const main = async () => {

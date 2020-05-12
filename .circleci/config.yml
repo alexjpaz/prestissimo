@@ -19,9 +19,6 @@ jobs:
       - node/with-cache:
           steps:
             - run: npm install
-            - run: npm run postinstall:download-dependencies
-            - run: ./scripts/wait-until-localstack-is-ready
-            - run: ./scripts/provision-localstack
             - run: npm test
             - run: npm run serverless:package
 workflows:
