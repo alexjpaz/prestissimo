@@ -3,6 +3,7 @@ service: prestissimo
 provider:
   name: aws
   runtime: nodejs12.x
+  stage: ${opt:stage, 'dev'}
   environment:
     awsBucket: "${self.environment.bucketName}"
 
