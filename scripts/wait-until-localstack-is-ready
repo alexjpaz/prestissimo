@@ -19,9 +19,11 @@ const waitFor = async (fn) => {
         }
 
         try {
+            console.log(123);
             await fn();
             ready = true;
         } catch(e) {
+            console.log(456);
             logger.error(e);
             await aSecond();
         }
