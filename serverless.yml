@@ -3,6 +3,9 @@ service: prestissimo
 provider:
   name: aws
   runtime: nodejs12.x
+  environment:
+    awsBucket: "${self.environment.bucketName}"
+
   iamRoleStatements:
    - Effect: "Allow"
      Action:
