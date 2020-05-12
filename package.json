@@ -7,7 +7,8 @@
     "start": "serverless offline",
     "postinstall": "./scripts/download-dependencies.sh",
     "pretest": "./scripts/wait-until-localstack-is-ready && ./scripts/provision-localstack",
-    "test": "NODE_ENV=test mocha -t 20000 --forbid-only --exclude='node_modules/**/*'  '**/*.spec.js'",
+    "test": "NODE_ENV=test mocha -t 20000 --forbid-only --exclude='node_modules/**/*' 'src/**/*.spec.js'",
+    "test:integration": "mocha -t 20000 --forbid-only --exclude='node_modules/**/*' 'test-integration/**/*.spec.js'",
     "serverless:package": "serverless package"
   },
   "repository": {

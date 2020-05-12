@@ -22,7 +22,30 @@ jobs:
             - run: npm install
             - run: npm test
             - run: npm run serverless:package
+  deploy:
+    docker:
+      - image: circleci/node:13
+    executor:
+      name: node/default
+    steps:
+      - checkout
+      - node/with-cache:
+          steps:
+            - run: echo 'export PATH=./opt/:$PATH' >> $BASH_ENV
+            - run: npm install
+            - run: : node_modules/.bin/serverless deploy --stage dev -v | tee deploy.out
+            - run: BASE_URL=$(cat deploy.out | grep 'ServiceEndpoint' | awk '{ print $2 }') yarn test:integration
+            - run: : node_modules/.bin/serverless deploy --stage production -v | tee deploy.out
+            - run: BASE_URL=$(cat deploy.out | grep 'ServiceEndpoint' | awk '{ print $2 }') yarn test:integration
+
 workflows:
     build-and-test:
       jobs:
         - build-and-test
+        - deploy:
+         requires:
+            - build-and-test
+         context: "aws.amazon.com/alexjpaz/circleci"
+         filters:
+           branches:
+            only: master
