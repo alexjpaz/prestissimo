@@ -11,7 +11,12 @@ jobs:
           steps:
             - run: npm install
             - run: npm run postinstall:download-dependencies
+            - run: docker-compose up -d
             - run: npm test
+            - run:
+               name: docker-compose down
+               command: docker-compose down -f
+               when: always
             - run: npm run serverless:package
 workflows:
     build-and-test:
