@@ -1,3 +1,4 @@
 node_modules/
 opt/
 .serverless/
+.DS_Store
