@@ -54,7 +54,7 @@ workflows:
         - build-and-test
         - deploy_branch:
             requires:
-               - build
+               - build-and-test
             context: "aws.amazon.com/alexjpaz/circleci"
             filters:
               branches:
