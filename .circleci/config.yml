@@ -35,11 +35,30 @@ jobs:
             - run: npm install
             - run: ./scripts/serverless-deploy dev
             - run: ./scripts/serverless-deploy production
+  deploy_branch:
+    docker:
+      - image: circleci/node:13
+    executor:
+      name: node/default
+    steps:
+      - checkout
+      - node/with-cache:
+          steps:
+            - run: echo 'export PATH=./opt/:$PATH' >> $BASH_ENV
+            - run: npm install
+            - run: ./scripts/serverless-deploy ${CIRCLE_BRANCH}
 
 workflows:
     build-and-test:
       jobs:
         - build-and-test
+        - deploy_branch:
+            requires:
+               - build
+            context: "aws.amazon.com/alexjpaz/circleci"
+            filters:
+              branches:
+                ignore: master
         - deploy:
             requires:
                - build-and-test
