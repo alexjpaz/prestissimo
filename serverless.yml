@@ -13,13 +13,13 @@ provider:
     stagingBucket:
       name: "${self:custom.bucketName}"
       corsConfiguration:
-        corsRules:
-          - allowedHeaders:
+        CorsRules:
+          - AllowedHeaders:
               - "*"
-            allowedMethods:
+            AllowedMethods:
               - PUT
               - POST
-            allowedOrigins:
+            AllowedOrigins:
               - "*"
 
   iamRoleStatements:
