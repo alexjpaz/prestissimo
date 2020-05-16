@@ -9,6 +9,19 @@ provider:
   environment:
     awsBucket: "${self:custom.bucketName}"
 
+  s3:
+    stagingBucket:
+      name: "${self:custom.bucketName}"
+      corsConfiguration:
+        CorsRules:
+          - AllowedHeaders:
+              - "*"
+            AllowedMethods:
+              - PUT
+              - POST
+            AllowedOrigins:
+              - "*"
+
   iamRoleStatements:
    - Effect: "Allow"
      Action:
@@ -35,7 +48,7 @@ functions:
     handler: handler.convert
     events:
       - s3:
-          bucket: ${self:custom.bucketName}
+          bucket: stagingBucket
           event: s3:ObjectCreated:*
           rules:
             - prefix: uploads/raw/
