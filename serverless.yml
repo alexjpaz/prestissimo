@@ -41,9 +41,13 @@ functions:
       - http:
           path: "{proxy+}"
           method: any
+          authorizer: authorizer
       - http:
           path: "/"
           method: any
+          authorizer: authorizer
+  authorizer:
+    handler: src/http/index.authroizer
   convert:
     handler: handler.convert
     events:
