@@ -22,30 +22,40 @@ const Router = (props = defaultProps()) => {
 
   app.use(express.static('public'))
 
-  app.post('/upload', upload.array('file', 10), async (req, res, next) => {
+  app.put('/upload/signed-url', async (req, res, next) => {
     try {
+      const url = await s3.getSignedUrlPromise('putObject', {
+        Bucket: config.awsBucket,
+        Key: 'foobar', // FIXME
+        Expires: 300,
+      });
 
-      const promises = req.files
-        .map(async (file) => {
-          try {
-            logger.info({ file }, "recieved file");
-            await s3.putObject({
-              Bucket: config.awsBucket,
-              Key: `uploads/raw/${file.filename}/${file.originalname}`,
-              Body: await fs.readFile(file.path)
-            }).promise();
-          } finally {
-            await fs.unlink(file.path);
-          }
-        });
+      if(!url) {
+        throw Error("InvalidStateException: no url created");
+      }
 
-      await Promise.all(promises);
-
-      return res.sendStatus(201);
+      return res.send(url);
     } catch(e) {
-      logger.error(e);
+      console.log(e);
       return next(e);
     }
+  });
+
+  app.post('/upload/signed-url', async (req, res, next) => {
+    s3.createPresignedPost({
+      Bucket: config.awsBucket,
+      Expires: 300,
+      Conditions: [
+        ['starts-with', '$key', 'uploads/raw/'],
+        ['content-length-range', 0, 52428800]
+      ]
+    }, function (err, data) {
+      if(err) {
+        return next(err);
+      }
+
+      res.send(data);
+    });
   });
 
   return app;

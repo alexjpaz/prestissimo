@@ -1,6 +1,7 @@
 const config = require('config');
 const sinon = require('sinon');
 const { expect } = require('chai');
+const superagent = require('superagent');
 const supertest = require('supertest');
 
 const fs = require('fs').promises;
@@ -17,7 +18,8 @@ describe('http/router', () => {
   beforeEach(() => {
     mockS3 = new AWS.S3();
 
-    sinon.spy(mockS3, 'putObject');
+    sinon.spy(mockS3, 'getSignedUrlPromise');
+    sinon.spy(mockS3, 'createPresignedPost');
 
     request = supertest(Router({
       s3: mockS3
@@ -45,87 +47,126 @@ describe('http/router', () => {
   });
 
   describe('upload', () => {
-    it('m4a file', async () => {
-      await request.post('/upload')
-        .set('Content-Type', 'multipart/form-data')
-        .type('form')
-        .attach("file", "./test/Beachy.m4a")
-        .expect(201);
-      ;
 
-      expect(fs.unlink.calledOnce).to.eql(true);
+    describe('presigned POST', () => {
+      /**
+       * TODO - This works with live s3 but not localstack
+       **/
 
-      expect(mockS3.putObject.calledOnce).to.eql(true);
+      describe('@wip should create a signed POST upload url', () => {
+        let rsp;
+        let body;
+        let firstCall;
+        let jsonPolicy;
 
-      const params = mockS3.putObject.args[0][0];
+        beforeEach(async () => {
+          rsp = await request.post('/upload/signed-url')
+            .expect(200);
 
-      expect(params.Key).to.match(/Beachy\.m4a$/);
-      expect(params.Body).to.be.a('Uint8Array');
-      expect(params.Body.length).to.eql(538295);
+          body = rsp.body;
 
-      const headRsp = await mockS3.headObject({
-        Bucket: params.Bucket,
-        Key: params.Key,
-      }).promise();
+          expect(mockS3.createPresignedPost.calledOnce);
+          ({ firstCall } = mockS3.createPresignedPost);
 
-      expect(headRsp.ContentLength).to.eql(538295);
-    });
 
-    it('multiple files', async () => {
-      await request.post('/upload')
-        .set('Content-Type', 'multipart/form-data')
-        .type('form')
-        .attach("file", "./test/Beachy.m4a")
-        .attach("file", "./test/Beachy.m4a")
-        .attach("file", "./test/Beachy.m4a")
-        .attach("file", "./test/Beachy.m4a")
-        .attach("file", "./test/Beachy.m4a")
-        .attach("file", "./test/Beachy.m4a")
-        .attach("file", "./test/Beachy.m4a")
-        .attach("file", "./test/Beachy.m4a")
-        .attach("file", "./test/Beachy.m4a")
-        .attach("file", "./test/Beachy.m4a")
-        .expect(201);
-      ;
+          jsonPolicy = JSON.parse(Buffer.from(body.fields.Policy, 'base64').toString());
+        });
 
-      const calls = mockS3.putObject.getCalls();
+        it('url', () => {
+          expect(body.url).to.contain(config.awsBucket);
+        });
 
-      expect(calls.length).to.eql(10);
-      expect(fs.unlink.getCalls().length).to.eql(10);
+        it('bucket', () => {
+          expect(body.fields.bucket).to.eql(config.awsBucket);
+          expect(firstCall.args[0].Bucket).to.eql(config.awsBucket);
+        });
 
-      for(let call of calls) {
-        const params = call.args[0];
+        it('expires', () => {
+          expect(body.fields.bucket).to.eql(config.awsBucket);
+          expect(firstCall.args[0].Expires).to.eql(300);
+        });
 
-        expect(params.Key).to.match(/Beachy\.m4a$/);
-        expect(params.Body).to.be.a('Uint8Array');
-        expect(params.Body.length).to.eql(538295);
+        it('starts-with key', () => {
+          expect(firstCall.args[0].Conditions[0]).to.eql(
+            ['starts-with', '$key', 'uploads/raw/']
+          );
+        });
+
+        it('content length', () => {
+          expect(firstCall.args[0].Conditions[1]).to.eql(
+            ['content-length-range', 0, 52428800]
+          );
+
+          const contentLengthRange = jsonPolicy.conditions.find((i) => {
+            return i[0] === 'content-length-range';
+          });
+
+          expect(contentLengthRange).to.eql(
+            ['content-length-range', 0, 52428800]
+          );
+        });
+      });
+
+      it.skip('should be able to upload via post', async () => {
+        const { body } = await request.post('/upload/signed-url')
+          .expect(200);
+
+        const data = body;
+
+        const req = superagent.post(data.url);
+
+        req.type('form');
+
+        Object.keys(data.fields).map((key) => {
+          req.field(key, data.fields[key]);
+        });
+
+        req.field("key", "uploads/raw/test");
+
+        const buffer = Buffer.from("test23");
+
+        req.attach("file", buffer)
+
+        console.log(req);
+
+        try {
+          const rsp = await req;
+          expect(rsp.statusCode).to.eql(204);
+        } catch(e) {
+          console.log(e);
+          throw e;
+        }
 
         const headRsp = await mockS3.headObject({
-          Bucket: params.Bucket,
-          Key: params.Key,
+          Bucket: "shared-private-bucket.alexjpaz.com",
+          Key: 'uploads/raw/test', // FIXME
         }).promise();
 
-        expect(headRsp.ContentLength).to.eql(538295);
-      }
+        expect(headRsp.ContentLength).not.to.eql(0);
+        expect(headRsp.ContentLength).to.eql(buffer.length);
+      });
     });
 
-    it('multiple files exceed maximum', async () => {
-      await request.post('/upload')
-        .set('Content-Type', 'multipart/form-data')
-        .type('form')
-        .attach("file", "./test/Beachy.m4a")
-        .attach("file", "./test/Beachy.m4a")
-        .attach("file", "./test/Beachy.m4a")
-        .attach("file", "./test/Beachy.m4a")
-        .attach("file", "./test/Beachy.m4a")
-        .attach("file", "./test/Beachy.m4a")
-        .attach("file", "./test/Beachy.m4a")
-        .attach("file", "./test/Beachy.m4a")
-        .attach("file", "./test/Beachy.m4a")
-        .attach("file", "./test/Beachy.m4a")
-        .attach("file", "./test/Beachy.m4a")
-        .expect(500);
-      ;
+  describe('presigned PUT', () => {
+    it('file', async () => {
+      const { text }  = await request.put('/upload/signed-url')
+        .expect(200);
+
+      const url = text;
+
+      const buffer = Buffer.from("test");
+
+      const req = await superagent.put(url)
+        .send(buffer);
+
+      const headRsp = await mockS3.headObject({
+        Bucket: config.awsBucket,
+        Key: 'foobar', // FIXME
+      }).promise();
+
+      expect(headRsp.ContentLength).not.to.eql(0);
+      expect(headRsp.ContentLength).to.eql(buffer.length);
     });
   });
+});
 });
