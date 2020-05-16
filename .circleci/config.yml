@@ -21,7 +21,7 @@ jobs:
             - run: echo 'export PATH=./opt/:$PATH' >> $BASH_ENV
             - run: npm install
             - run: npm test
-            - run: npm run serverless:package
+            - run: npm pack
   deploy:
     docker:
       - image: circleci/node:13
