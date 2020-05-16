@@ -9,19 +9,18 @@ provider:
   environment:
     awsBucket: "${self:custom.bucketName}"
 
-  provider:
-    s3:
-      stagingBucket:
-        name: "${self:custom.bucketName}"
-        corsConfiguration:
-          corsRules:
-            - allowedHeaders:
-                - "*"
-              allowedMethods:
-                - PUT
-                - POST
-              allowedOrigins:
-                - "*"
+  s3:
+    stagingBucket:
+      name: "${self:custom.bucketName}"
+      corsConfiguration:
+        corsRules:
+          - allowedHeaders:
+              - "*"
+            allowedMethods:
+              - PUT
+              - POST
+            allowedOrigins:
+              - "*"
 
   iamRoleStatements:
    - Effect: "Allow"
