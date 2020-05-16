@@ -7,7 +7,6 @@ provider:
   deploymentBucket:
     name: shared-private-bucket.alexjpaz.com
   environment:
-    foo: '123 '
     awsBucket: "${self:custom.bucketName}"
 
   iamRoleStatements:
