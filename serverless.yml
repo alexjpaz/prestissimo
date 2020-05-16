@@ -6,11 +6,11 @@ provider:
   stage: ${opt:stage, 'dev'}
   apiKeys:
     - free:
-      - ${opt:stage}-free
+      - ${self:provider.stage}-free
     - paid:
-      - ${opt:stage}-paid
+      - ${self:provider.stage}-paid
     - test:
-      - ${opt:stage}-test
+      - ${self:provider.stage}-test
   usagePlan:
     - free:
         quota:
