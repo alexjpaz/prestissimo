@@ -3,12 +3,21 @@ const { expect } = require('chai');
 const supertest = require('supertest');
 const superagent = require('superagent');
 
-let request = supertest(process.env.BASE_URL);
+const {
+  request,
+  getAccessToken,
+} = require('./common');
 
 describe('upload', () => {
+  let token;
+
+  before(async () => {
+    token = await getAccessToken();
+  });
 
   it('should create a signed PUT url', async () => {
     rsp = await request.put('/upload/signed-url')
+      .set("Authorization", `Bearer ${token}`)
       .expect(200);
 
     const url = rsp.text;
@@ -24,6 +33,7 @@ describe('upload', () => {
 
   it('should create a signed POST url', async () => {
     rsp = await request.post('/upload/signed-url')
+      .set("Authorization", `Bearer ${token}`)
       .expect(200);
 
     let data = rsp.body;

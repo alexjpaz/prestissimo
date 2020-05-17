@@ -1,32 +1,37 @@
 const supertest = require('supertest');
 
-let request = supertest(process.env.BASE_URL);
+const {
+  request,
+  getAccessToken,
+} = require('./common');
 
 describe('auth', () => {
-  it('should allow some pages to pass through', async () => {
-    await request.get('/public/index.html')
-      .expect(200)
-    ;
+  let token;
+
+  before(async () => {
+    token = await getAccessToken();
   });
 
+
   describe('unauthorized', () => {
+    it.skip('should allow some pages to pass through', async () => {
+      await request.get('/index.html')
+        .expect(200)
+      ;
+    });
+
     it('should bounce when no credentials are provided', async () => {
-      await request.get('/some-private-url')
+      await request.get('/index.html')
         .expect(401)
       ;
     });
   });
 
   describe('authorized', () => {
-    let token;
-    before(() => {
-      // TODO - get token!
-    });
-
     it('should allow', async () => {
-      await request.post('/some-private-url')
+      await request.get('/index.html')
         .set("Authorization", `Bearer ${token}`)
-        .expect(404)
+        .expect(200)
       ;
     });
   });
