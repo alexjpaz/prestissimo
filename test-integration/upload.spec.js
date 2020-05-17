@@ -11,12 +11,12 @@ const {
 describe('upload', () => {
   let token;
 
-  before(async () => {
+  beforeEach(async () => {
     token = await getAccessToken();
   });
 
   it('should create a signed PUT url', async () => {
-    rsp = await request.put('/upload/signed-url')
+    let rsp = await request.put('/upload/signed-url')
       .set("Authorization", `Bearer ${token}`)
       .expect(200);
 
@@ -32,7 +32,7 @@ describe('upload', () => {
   })
 
   it('should create a signed POST url', async () => {
-    rsp = await request.post('/upload/signed-url')
+    let rsp = await request.post('/upload/signed-url')
       .set("Authorization", `Bearer ${token}`)
       .expect(200);
 

@@ -5,7 +5,7 @@ const {
   getAccessToken,
 } = require('./common');
 
-before(async () => {
+beforeEach(async () => {
   token = await getAccessToken();
 });
 

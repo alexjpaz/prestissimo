@@ -8,7 +8,7 @@ const {
 describe('auth', () => {
   let token;
 
-  before(async () => {
+  beforeEach(async () => {
     token = await getAccessToken();
   });
 
