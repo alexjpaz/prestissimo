@@ -1,10 +1,10 @@
-# 🎹 prestissimo
+# [🎹 prestissimo](http://prestissimo.alexjpaz.com/)
 
 > Quickly upload and distribute music
 
 ## What is *prestissimo*
 
-*prestissimo* is a serverless application that will allow a music producer to upload a file (e.g. WAV, AIFF, MP4, etc) and c
+*prestissimo* is a serverless application that will allow a music producer to upload a file (e.g. WAV, AIFF, MP4, etc), convert them to the appropriate format (e.g. WAV -> MP3), and upload to them to target platforms (e.g. [soundcloud](https://soundcloud.com/alexanderthepaz).
 
 ## Why
 
@@ -12,8 +12,8 @@ Distributing media file on different platforms (such as [soundcloud](https://sou
 
 ### Usage
 
+TBD - See http://prestissimo.alexjpaz.com/
+
 ## Supported Conversions
 
-### Contributing
-
-### License
+TBD see ffmpeg static build for linux
