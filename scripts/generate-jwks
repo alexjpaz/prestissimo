@@ -1,0 +1,58 @@
+#!/usr/bin/env node
+
+/**
+ * Generate Key Pair
+ *
+ * This script will generate an RSA256 keypair and equivalent JWK JSON file
+ * The secret key should be handled with care and placed in a secrets provider
+ * such as vault or AWS Secrets Manager.
+ *
+ * The script will output three files in the "output" directory
+ *   - private-key.pem
+ *   - public-key.pem
+ *   - jwks.json
+ *
+ * Usage:
+ *  node run generate-keypair
+ *
+ * @see https://github.com/panva/jose
+ **/
+
+const { JWT, JWK, JWKS } = require('jose');
+
+const { promisify } = require('util');
+
+const fs = require('fs').promises;
+
+const logger = console;
+
+
+const generateKeypair = async (args) => {
+  const jwks = new JWKS.KeyStore();
+  await jwks.generate("RSA");
+
+  const OUTPUT_PRIVATE_KEY = true;
+
+  let jwk = jwks.all()[0];
+
+  const token = await JWT.sign({ test: true }, jwk);
+
+  await JWT.verify(token, jwk);
+
+  let jwksJson = JSON.stringify(jwks.toJWKS(OUTPUT_PRIVATE_KEY), null, 2);
+
+  logger.info(jwksJson);
+
+  await fs.writeFile("./jwks.json", jwksJson);
+};
+
+const main = async () => {
+  try {
+    await generateKeypair(process.argv.slice(2));
+  } catch(e) {
+    logger.error(e);
+    process.exit(1);
+  }
+};
+
+main();

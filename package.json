@@ -7,7 +7,8 @@
     "start": "serverless offline",
     "postinstall": "./scripts/download-dependencies.sh",
     "pretest": "./scripts/wait-until-localstack-is-ready && ./scripts/provision-localstack",
-    "test": "NODE_ENV=test mocha -t 20000 --forbid-only --exclude='node_modules/**/*' 'src/**/*.spec.js'",
+    "test:mocha": "NODE_ENV=test mocha -t 20000 --forbid-only --exclude='node_modules/**/*' 'src/**/*.spec.js'",
+    "test": "npm run test:mocha",
     "test:integration": "mocha -t 20000 --forbid-only --exclude='node_modules/**/*' 'test-integration/**/*.spec.js'",
     "prepack": "serverless print && serverless package"
   },
@@ -33,7 +34,10 @@
   "dependencies": {
     "config": "^3.3.1",
     "express": "^4.17.1",
+    "jose": "^1.27.0",
     "js-yaml": "^3.13.1",
+    "jsonwebtoken": "^8.5.1",
+    "jwks-rsa": "^1.8.0",
     "multer": "^1.4.2",
     "pino": "^6.2.1",
     "serverless-http": "^2.4.1"

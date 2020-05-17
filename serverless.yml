@@ -39,11 +39,17 @@ functions:
     handler: src/http/index.router
     events:
       - http:
-          path: "{proxy+}"
+          path: "/index.html"
           method: any
       - http:
           path: "/"
           method: any
+      - http:
+          path: "{proxy+}"
+          method: any
+          authorizer: authorizer
+  authorizer:
+    handler: src/http/index.authorizer
   convert:
     handler: handler.convert
     events:
