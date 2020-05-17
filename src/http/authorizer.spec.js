@@ -9,7 +9,7 @@ const very_much_not_secure  = require('../../test/very_much_not_secure/jwks.json
 
 const Authorizer = require('./authorizer');
 
-describe('wip authorizer', () => {
+describe('authorizer', () => {
   let app;
   let server;
   let authorizer;
