@@ -1,2 +1,6 @@
 ---
+authorizer:
+  audience: "https://prestissimo.alexjpaz.com"
+  issuer: "https://alexjpaz.auth0.com/"
+  jwksUri: "https://alexjpaz.auth0.com/.well-known/jwks.json"
 awsRegion: 'us-east-1'

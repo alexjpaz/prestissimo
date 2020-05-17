@@ -53,7 +53,7 @@ describe('http/router', () => {
        * TODO - This works with live s3 but not localstack
        **/
 
-      describe('@wip should create a signed POST upload url', () => {
+      describe('should create a signed POST upload url', () => {
         let rsp;
         let body;
         let firstCall;
