@@ -127,8 +127,6 @@ describe('http/router', () => {
 
         req.attach("file", buffer)
 
-        console.log(req);
-
         try {
           const rsp = await req;
           expect(rsp.statusCode).to.eql(204);

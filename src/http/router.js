@@ -36,7 +36,7 @@ const Router = (props = defaultProps()) => {
 
       return res.send(url);
     } catch(e) {
-      console.log(e);
+      logger.log(e);
       return next(e);
     }
   });

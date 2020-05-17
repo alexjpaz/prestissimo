@@ -17,7 +17,7 @@ describe('convert', () => {
     await s3.putObject({
       Bucket: config.awsBucket,
       Key: 'test-key',
-      Body: await fs.readFile('./test/Beachy.m4a'),
+      Body: await fs.readFile('./test/examples/simplescale.wav'),
     }).promise();
   });
 
