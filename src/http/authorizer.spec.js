@@ -21,7 +21,7 @@ describe('wip authorizer', () => {
       res.send(very_much_not_secure);
     });
 
-    const server = app.listen();
+    server = app.listen();
 
     await once(server, 'listening');
 
@@ -30,6 +30,12 @@ describe('wip authorizer', () => {
       issuer: "fake",
       jwksUri: `http://localhost:${server.address().port}/.well-known/jwks.json`
     });
+  });
+
+  after(async () => {
+    if(server) {
+      server.close();
+    }
   });
 
   describe('should reject', () => {
