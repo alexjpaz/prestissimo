@@ -1,7 +1,7 @@
 const superagent = require('superagent');
 const supertest = require('supertest');
 
-let request = supertest(process.env.BASE_URL);
+let request = supertest(process.env.BASE_URL || "http://localhost:3000/dev");
 
 const getAccessToken = async () => {
   try {
