@@ -47,7 +47,7 @@ functions:
           method: any
           authorizer: authorizer
   authorizer:
-    handler: src/http/index.authroizer
+    handler: src/http/index.authorizer
   convert:
     handler: handler.convert
     events:
