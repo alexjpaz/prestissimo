@@ -58,7 +58,7 @@ workflows:
             context: "aws.amazon.com/alexjpaz/circleci"
             filters:
               branches:
-                ignore: master
+                only: /feature\/.*/
         - deploy:
             requires:
                - build-and-test
