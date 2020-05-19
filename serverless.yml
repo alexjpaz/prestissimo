@@ -39,13 +39,13 @@ functions:
     handler: src/http/index.router
     events:
       - http:
-          path: "/index.html"
-          method: any
-      - http:
           path: "/"
           method: any
       - http:
           path: "{proxy+}"
+          method: any
+      - http:
+          path: "/api/{proxy+}"
           method: any
           authorizer: authorizer
   authorizer:
