@@ -20,7 +20,7 @@ jobs:
           steps:
             - run: echo 'export PATH=./opt/:$PATH' >> $BASH_ENV
             - run: npm install
-            - run: npm build
+            - run: npm run build
             - run: npm test
             - run: npm pack
   deploy:
@@ -33,7 +33,7 @@ jobs:
       - node/with-cache:
           steps:
             - run: echo 'export PATH=./opt/:$PATH' >> $BASH_ENV
-            - run: npm install
+            - run: npm run build
             - run: npm build
             - run: ./scripts/serverless-deploy dev
             - run: ./scripts/serverless-deploy production
