@@ -12,27 +12,34 @@ describe('ffmpeg', () => {
     logger.debug("tempdir=%s", tempdir);
   });
 
+  const convert = async (input, output) => {
+    const command = ffmpeg(input)
+      .output(output)
+
+    await ffmpeg.runAsync(command);
+  };
+
   describe('m4a', () => {
     let input = './test/examples/simplescale.m4a';
 
     it('mp3', async () => {
       const output = path.join(tempdir, './outfile.mp3');
-      await ffmpeg.foo(input, output);
+      await convert(input, output);
     });
 
     it('wav', async () => {
       const output = path.join(tempdir, './outfile.wav');
-      await ffmpeg.foo(input, output);
+      await convert(input, output);
     });
 
     it('png', async () => {
       const output = path.join(tempdir, './outfile.png');
-      await ffmpeg.foo(input, output);
+      await convert(input, output);
     });
 
     it.skip('metadata', async () => {
       const output = path.join(tempdir, './outfile.txt');
-      await ffmpeg.foo(input, output);
+      await convert(input, output);
     });
   });
 
@@ -41,12 +48,12 @@ describe('ffmpeg', () => {
 
     it('mp3', async () => {
       const output = path.join(tempdir, './outfile.mp3');
-      await ffmpeg.foo(input, output);
+      await convert(input, output);
     });
 
     it('wav', async () => {
       const output = path.join(tempdir, './outfile.wav');
-      await ffmpeg.foo(input, output);
+      await convert(input, output);
     });
   });
 
@@ -55,12 +62,12 @@ describe('ffmpeg', () => {
 
     it('mp3', async () => {
       const output = path.join(tempdir, './outfile.mp3');
-      await ffmpeg.foo(input, output);
+      await convert(input, output);
     });
 
     it('wav', async () => {
       const output = path.join(tempdir, './outfile.wav');
-      await ffmpeg.foo(input, output);
+      await convert(input, output);
     });
   });
 });
