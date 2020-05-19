@@ -3,6 +3,8 @@ import ReactDOM from 'react-dom';
 
 const { logger } = require('./logger');
 
+import { App } from './components/App';
+
 const title = 'React with Webpack and Babel';
 
 let loader = document.querySelector('#loader');
@@ -12,13 +14,6 @@ if(loader) {
 }
 
 let root = document.querySelector('#app');
-
-function App() {
-  return (
-    <div data-test-id='App-root'>
-    </div>
-  );
-}
 
 ReactDOM.render(
   <App />,
