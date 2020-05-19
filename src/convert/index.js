@@ -1,6 +1,6 @@
 const config = require('config');
 
-const { spawn } = require('child_process');
+const ffmpeg = require('../utils/ffmpeg');
 
 const { logger } = require('../utils/logger');
 
@@ -8,6 +8,17 @@ const AWS = require('../utils/aws');
 const createTempFile = require('../utils/createTempFile');
 
 const s3 = new AWS.S3();
+
+const getManifest = async (Record) => {
+  const rsp = await s3.getObject({
+    Bucket: Record.s3.bucket.name,
+    Key: Record.s3.object.key,
+  }).promise();
+
+  let manifest = JSON.parse(rsp.Body);
+
+  return manifest;
+};
 
 const cacheObjectToFilesystem = async (inputRecord) => {
   const tempFile = await createTempFile();
@@ -24,46 +35,15 @@ const cacheObjectToFilesystem = async (inputRecord) => {
   return tempFile;
 };
 
-const ffmpeg = async (inputFile, outputFile, args = []) => {
-  const ffmpegArgs = [
-    '-y',
-    '-i', inputFile.path,
-    outputFile.path,
-    ...args
-  ];
-
-  logger.info('Spawning ffmpeg with args', args.join(' '));
-
-  const child = spawn('ffmpeg', ffmpegArgs);
-
-  let data = ""
-
-  for await (const chunk of child.stdout) {
-    data += chunk;
-  }
-
-  let error = "";
-  for await (const chunk of child.stderr) {
-    error += chunk;
-  }
-
-  const exitCode = await new Promise( (resolve, reject) => {
-    child.on('close', resolve);
-  });
-
-  if(exitCode !== 0) {
-    logger.warn("ffmpeg exited with non-zero status", data, error);
-  }
-
-  return {
-    data,
-    exitCode,
-    error,
-  }
-
-};
-
 const convertAndUpload = async (Record) => {
+  const manifest = await getManifest(Record);
+
+  // TODO - iterate all items
+  
+  const item = manifest.items[0];
+
+  console.log(item.name);
+
   const inputFile = await cacheObjectToFilesystem(Record);
 
   // FIXME
@@ -73,17 +53,14 @@ const convertAndUpload = async (Record) => {
   ];
 
   try {
-    logger.info('Converting record');
+      logger.info('Converting record');
 
-    const tasks = formats.map(async (format) => {
-      const outputFile = await createTempFile(format); // TODO
+      const tasks = formats.map(async (format) => {
 
       try {
-        const rsp = await ffmpeg(inputFile, outputFile);
 
-        if(rsp.exitCode !== 0) {
-          throw new Error("Failed to convert object: ExitCode=" + rsp.exitCode);
-        }
+        //const rsp = await ffmpeg(inputFile, outputFile);
+        let outputBuffer = item.data
 
         logger.log('Uploading converted object');
 
@@ -91,11 +68,11 @@ const convertAndUpload = async (Record) => {
           Bucket: config.awsBucket,
           Key: `test/${Record.s3.object.key}/${format}`,
           ContentType: 'video/mkv',
-          Body: await outputFile.read(),
+          Body: outputBuffer.toString()
         }).promise();
 
       } finally {
-        await outputFile.cleanup();
+        // Cleanuop
       }
     });
 
@@ -111,12 +88,16 @@ const convertAndUpload = async (Record) => {
 };
 
 module.exports.convert = async (event, context) => {
+  const promises = [];
+
   for(let Record of event.Records) {
-    try {
-      await convertAndUpload(Record);
-    } catch(e) {
-      logger.error(e);
-      throw e;
-    }
+    promises.push(convertAndUpload(Record));
+  }
+
+  try {
+    await Promise.all(promises);
+  } catch(e) {
+    logger.error(e);
+    throw e;
   }
 };

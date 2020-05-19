@@ -5,7 +5,8 @@ const { logger } = require('./logger');
  * Run an ffmpeg command in an async/await manner
  * @see https://github.com/fluent-ffmpeg/node-fluent-ffmpeg/issues/710
  */
-const asyncRun = async (command) => {
+
+ffmpeg.runAsync = async (command) => {
   return new Promise((resolve, reject) => {
     command
       .on('progress', (progress) => {
@@ -24,9 +25,4 @@ const asyncRun = async (command) => {
   });
 };
 
-exports.foo = async (input, output) => {
-  const command = ffmpeg(input)
-    .output(output)
-
-  await asyncRun(command);
-};
+module.exports = ffmpeg;
