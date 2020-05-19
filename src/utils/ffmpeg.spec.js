@@ -1,4 +1,7 @@
+
+const { expect } = require('chai');
 const ffmpeg = require('./ffmpeg');
+const stream = require('stream');
 const fs = require('fs').promises;
 const os = require('os');
 const path = require('path');
@@ -18,6 +21,40 @@ describe('ffmpeg', () => {
 
     await ffmpeg.runAsync(command);
   };
+
+  describe('buffers', () => {
+    let input = './test/examples/simplescale.wav';
+
+    it('should convert a file using buffers', async () => {
+      let inputBuffer = await fs.readFile(input);
+      let inputStream = new stream.Readable();
+      inputStream.push(inputBuffer);
+      inputStream.push(null);
+
+      let buffers = [];
+
+      let outputBuffer ;
+
+      let outputStream = new stream.Writable({
+        write(chunk, env, next) {
+          buffers.push(chunk);
+          next();
+        },
+        final(cb) {
+          outputBuffer = Buffer.concat(buffers);
+          cb();
+        }
+      });
+
+      const command = await ffmpeg(inputStream)
+        .format('mp3')
+        .output(outputStream);
+
+      await ffmpeg.runAsync(command);
+
+      expect(outputBuffer.length).to.be.above(190000);
+    });
+  });
 
   describe('m4a', () => {
     let input = './test/examples/simplescale.m4a';
