@@ -1,5 +1,7 @@
 const config = require('config');
 
+const stream = require('stream');
+
 const ffmpeg = require('../utils/ffmpeg');
 
 const { logger } = require('../utils/logger');
@@ -38,29 +40,43 @@ const cacheObjectToFilesystem = async (inputRecord) => {
 const convertAndUpload = async (Record) => {
   const manifest = await getManifest(Record);
 
-  // TODO - iterate all items
-  
+  // FIXME - iterate all items
+  // Maybe invoke other lambdas?
   const item = manifest.items[0];
 
-  console.log(item.name);
-
-  const inputFile = await cacheObjectToFilesystem(Record);
-
-  // FIXME
-  const formats = [
-    "out.wav",
-    "out.mkv",
-  ];
-
   try {
-      logger.info('Converting record');
+    logger.info('Converting record');
 
-      const tasks = formats.map(async (format) => {
+    const tasks = item.targets.map(async (target) => {
+      let { format } = target;
 
       try {
+        // FIXME - move this out!
+        let inputBuffer = Buffer.from(item.data, 'base64');
+        let inputStream = new stream.Readable();
+        inputStream.push(inputBuffer);
+        inputStream.push(null);
 
-        //const rsp = await ffmpeg(inputFile, outputFile);
-        let outputBuffer = item.data
+        let buffers = [];
+
+        let outputBuffer ;
+
+        let outputStream = new stream.Writable({
+          write(chunk, env, next) {
+            buffers.push(chunk);
+            next();
+          },
+          final(cb) {
+            outputBuffer = Buffer.concat(buffers);
+            cb();
+          }
+        });
+
+        const command = await ffmpeg(inputStream)
+          .format('mp3')
+          .output(outputStream);
+
+        await ffmpeg.runAsync(command);
 
         logger.log('Uploading converted object');
 
@@ -68,7 +84,7 @@ const convertAndUpload = async (Record) => {
           Bucket: config.awsBucket,
           Key: `test/${Record.s3.object.key}/${format}`,
           ContentType: 'video/mkv',
-          Body: outputBuffer.toString()
+          Body: outputBuffer,
         }).promise();
 
       } finally {
@@ -81,7 +97,7 @@ const convertAndUpload = async (Record) => {
   } catch(e) {
     throw e;
   } finally {
-    await inputFile.cleanup();
+    // Cleanup
   }
 
   logger.log('Sucessfully converted and uploaded object');

@@ -22,7 +22,10 @@ describe('convert', () => {
         items: [
           {
             name: "simplescale.wav",
-            data: (await fs.readFile('./test/examples/simplescale.wav')).toString('base64')
+            data: (await fs.readFile('./test/examples/simplescale.wav')).toString('base64'),
+            targets: [
+              { format: "mp3" }
+            ],
           }
         ]
       };
@@ -69,7 +72,8 @@ describe('convert', () => {
         Key: 'test/test-key2/out.mkv',
       }).promise();
 
-      console.log(data.Body.toString());
+      // DEBUG
+      await fs.writeFile('/tmp/1.mp3', data.Body);
     });
   });
 });
