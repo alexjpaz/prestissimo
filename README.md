@@ -2,7 +2,7 @@
 
 > Quickly upload and distribute music
 
-[![circleci build status](https://circleci.com/gh/alexjpaz/prestissimo.svg?style=svg)](<LINK>)
+[![circleci build status](https://circleci.com/gh/alexjpaz/prestissimo.svg?style=svg)](https://circleci.com/gh/alexjpaz/prestissimo)
 
 
 ## What is *prestissimo*
