@@ -59,6 +59,11 @@ const convertAndUpload = async (Record) => {
 
         let buffers = [];
 
+        // TODO read metadat using ffprob
+        // ffmpeg.ffprobe('/path/to/file.avi', function(err, metadata) {
+        // console.dir(metadata);
+        // });
+
         let outputBuffer ;
 
         let outputStream = new stream.Writable({
