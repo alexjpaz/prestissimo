@@ -34,7 +34,6 @@ jobs:
           steps:
             - run: echo 'export PATH=./opt/:$PATH' >> $BASH_ENV
             - run: npm run build
-            - run: npm build
             - run: ./scripts/serverless-deploy dev
             - run: ./scripts/serverless-deploy production
   deploy_branch:
@@ -48,7 +47,8 @@ jobs:
           steps:
             - run: echo 'export PATH=./opt/:$PATH' >> $BASH_ENV
             - run: npm install
-            - run: ./scripts/serverless-deploy ${CIRCLE_BRANCH}
+            - run: npm run build
+            - run: ./scripts/serverless-deploy pr-${CIRCLE_PULL_REQUEST##*/}
 
 workflows:
     build-and-test:
