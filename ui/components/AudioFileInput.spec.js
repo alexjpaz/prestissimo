@@ -31,7 +31,7 @@ test('read file', async () => {
     }
   });
 
-  await findByTestId(/file-loaded/);
+  await findByTestId(/file-name/);
 
   expect(onClose).toHaveBeenCalled();
 

@@ -65,22 +65,22 @@ export const AudioFileInput = ({ onClose = NOOP }) => {
 
   return (
     <div>
-      <div class="file has-name">
-        <button class="button is-info" disabled={!data.dataUri} onClick={play}>
-          <i class="fas fa-play"></i>
+      <div className="file has-name">
+        <button className="button is-info" disabled={!data.dataUri} onClick={play}>
+          <i className="fas fa-play"></i>
         </button>
-        <label class="file-label">
+        <label className="file-label">
           {fileInput}
-          <span class="file-cta">
-            <span class="file-icon">
-              <i class="fas fa-upload"></i>
+          <span className="file-cta">
+            <span className="file-icon">
+              <i className="fas fa-upload"></i>
             </span>
-            <span class="file-label">
+            <span className="file-label">
               Choose a file…
             </span>
           </span>
           { data.file &&
-              <span class="file-name">
+              <span className="file-name" data-testid='file-name'>
                 {data.file.name}
               </span>
           }
