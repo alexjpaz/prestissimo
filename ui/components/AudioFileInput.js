@@ -40,7 +40,9 @@ export const AudioFileInput = ({ onClose = NOOP }) => {
         dataUri
       });
 
-      onClose(dataUri);
+      onClose({
+        file
+      });
     } catch(e) {
       window.alert("Invalid workbook:" + e.message);
     }

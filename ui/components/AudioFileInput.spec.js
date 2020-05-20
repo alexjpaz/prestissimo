@@ -18,8 +18,8 @@ test('read file', async () => {
   const fileElement = getByTestId(/file/i);
   expect(fileElement).toBeInTheDocument();
 
-  const fakeContent = await fs.readFile('./test/examples/simplescale.wav');
-  //const fakeContent = Buffer.from("FAKE_BINARY_DATA");
+  //const fakeContent = await fs.readFile('./test/examples/simplescale.wav');
+  const fakeContent = Buffer.from("FAKE_BINARY_DATA");
 
   const fakeFile = new File([fakeContent], "simplescale.wav", {
     type: "audio/wav",
@@ -33,11 +33,9 @@ test('read file', async () => {
 
   await findByTestId(/file-name/);
 
-  expect(onClose).toHaveBeenCalled();
-
-  const base64 = fakeContent.toString('base64');
-
-  expect(onClose.mock.calls[0][0]).toContain(`data:audio/wav;base64,${base64}`);
+  expect(onClose).toHaveBeenCalledWith({
+    file: fakeFile
+  });
 });
 
 
