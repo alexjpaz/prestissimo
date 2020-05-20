@@ -1,10 +1,12 @@
 import React from 'react';
-import { App } from './App';
+import { action } from '@storybook/addon-actions';
+
+import { AudioFileInput } from './AudioFileInput';
 
 export default {
-  title: 'App',
+  title: AudioFileInput.name,
 };
 
 export const withDefault = () => (
-  <App />
+  <AudioFileInput />
 );

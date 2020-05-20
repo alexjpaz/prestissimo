@@ -50,13 +50,27 @@ export const AudioFileInput = ({ onClose = NOOP }) => {
       { data.fileLoaded &&
       <audio data-testid='file-loaded' controls src={data.dataUri}> </audio>
       }
-      <input
-        ref={fileRef}
-        data-testid='file'
-        name='file'
-        type='file'
-        accept=".wav, .aif"
-        onChange={onChange}/>
+      <div className="file">
+        <label className="file-label">
+          <input
+            hidden
+            ref={fileRef}
+            data-testid='file'
+            name='file'
+            type='file'
+            accept=".wav, .aif"
+            onChange={onChange} />
+
+          <span className="file-cta">
+            <span className="file-icon">
+              <i className="fas fa-upload"></i>
+            </span>
+            <span className="file-label">
+              Choose a file…
+            </span>
+          </span>
+        </label>
+      </div>
     </React.Fragment>
   );
 }
