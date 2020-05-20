@@ -22,30 +22,9 @@ const getManifest = async (Record) => {
   return manifest;
 };
 
-const cacheObjectToFilesystem = async (inputRecord) => {
-  const tempFile = await createTempFile();
-
-  logger.info("Caching object", inputRecord.s3.bucket.name, inputRecord.s3.object.key);
-
-  const rsp = await s3.getObject({
-    Bucket: inputRecord.s3.bucket.name,
-    Key: inputRecord.s3.object.key,
-  }).promise();
-
-  await tempFile.write(rsp.Body);
-
-  return tempFile;
-};
-
-const convertAndUpload = async (Record) => {
-  const manifest = await getManifest(Record);
-
-  // FIXME - iterate all items
-  // Maybe invoke other lambdas?
-  const item = manifest.items[0];
-
+const convertAndUpload = async (item, context) => {
   try {
-    logger.info('Converting record');
+    logger.info({ context }, 'Converting item',);
 
     const tasks = item.targets.map(async (target) => {
       let { format } = target;
@@ -78,17 +57,28 @@ const convertAndUpload = async (Record) => {
         });
 
         const command = await ffmpeg(inputStream)
-          .format('mp3')
+          .format(format)
           .output(outputStream);
 
         await ffmpeg.runAsync(command);
 
-        logger.log('Uploading converted object');
+        logger.log({ length: outputBuffer.length },
+          'Uploading converted object');
+
+        let Key = [
+          'uploads',
+          item.id,
+          context.awsRequestId,
+          format,
+        ].join('/');
 
         await s3.putObject({
           Bucket: config.awsBucket,
-          Key: `test/${Record.s3.object.key}/${format}`,
-          ContentType: 'video/mkv',
+          Key,
+          Metadata: {
+            manifestid: item.id,
+            format,
+          },
           Body: outputBuffer,
         }).promise();
 
@@ -108,11 +98,25 @@ const convertAndUpload = async (Record) => {
   logger.log('Sucessfully converted and uploaded object');
 };
 
+const processRecord = async (Record, context) => {
+  try {
+    const manifest = await getManifest(Record, context);
+
+    // FIXME - iterate all items
+    // Maybe invoke other lambdas?
+    const item = manifest.items[0];
+
+    await convertAndUpload(item, context);
+  } catch(e) {
+    throw e;
+  }
+};
+
 module.exports.convert = async (event, context) => {
   const promises = [];
 
   for(let Record of event.Records) {
-    promises.push(convertAndUpload(Record));
+    promises.push(processRecord(Record, context));
   }
 
   try {

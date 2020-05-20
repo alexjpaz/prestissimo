@@ -5,22 +5,26 @@ const { expect } = require('chai');
 
 const { convert } = require('./');
 
+const { logger } = require('../utils/logger');
 const AWS = require('../utils/aws');
 const s3 = new AWS.S3();
+
+const generateId = () => {
+  // Does not need to be crypto secure
+  const data = new Date().getTime().toString();
+  return require('crypto').createHash('sha1').update(data).digest('hex');
+};
 
 describe('convert', () => {
 
   describe('@wip manifest', () => {
+    let manifest;
     beforeEach(async () => {
-      await s3.deleteObject({
-        Bucket: config.awsBucket,
-        Key: 'test/test-key',
-      }).promise();
-
-      let manifest = {
+      manifest = {
         version: 1,
         items: [
           {
+            id: generateId(),
             name: "simplescale.wav",
             data: (await fs.readFile('./test/examples/simplescale.wav')).toString('base64'),
             targets: [
@@ -56,24 +60,34 @@ describe('convert', () => {
         ]
       };
 
-      await convert(event);
+      const context = {
+        awsRequestId: generateId(),
+      };
 
-      const rsp = await s3.headObject({
+      await convert(event, context);
+
+      let manifestItem = manifest.items[0];
+      let manifestId = manifestItem.id;
+
+      let objects = await s3.listObjectsV2({
         Bucket: config.awsBucket,
-        Key: 'test/test-key2/out.mkv',
+        Prefix: `uploads/${manifestId}/${context.awsRequestId}`
       }).promise();
 
-      expect(rsp.ContentLength).to.be.above(0);
-      expect(rsp.ETag).to.be.a('string');
-      expect(rsp.ContentType).to.eql('video/mkv');
+      expect(objects.KeyCount).to.be.above(0);
 
-      let data = await s3.getObject({
+      let { Key } = objects.Contents.find(i => i);
+
+      let head = await s3.headObject({
         Bucket: config.awsBucket,
-        Key: 'test/test-key2/out.mkv',
+        Key,
       }).promise();
 
-      // DEBUG
-      await fs.writeFile('/tmp/1.mp3', data.Body);
+      expect(head.ContentLength).to.be.above(0);
+      expect(head.ETag).to.be.a('string');
+      //expect(head.ContentType).to.eql('video/mkv');
+      expect(head.Metadata.manifestid).to.eql(manifestId);
+      expect(head.Metadata.format).to.eql(manifestItem.targets[0].format);
     });
   });
 });
