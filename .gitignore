@@ -5,3 +5,4 @@ opt/
 .DS_Store
 yarn-error.log
 public/
+storybook-static/
