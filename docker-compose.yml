@@ -8,7 +8,3 @@ services:
     environment:
       SERVICES: s3,sqs,dynamodb
       DATA_DIR: /tmp/localstack/data
-    volumes:
-      - 'sqs:/tmp/localstack'
-volumes:
-  sqs: null
