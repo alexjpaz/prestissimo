@@ -22,6 +22,12 @@ const Router = (props = defaultProps()) => {
 
   app.use(express.static('public'))
 
+  app.get('/api/status', (req, res) => {
+    res.send({
+      status: "OK",
+    });
+  });
+
   app.put('/upload/signed-url', async (req, res, next) => {
     try {
       const url = await s3.getSignedUrlPromise('putObject', {

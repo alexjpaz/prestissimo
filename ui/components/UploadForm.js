@@ -6,6 +6,8 @@ export function UploadForm() {
       <form>
         <label htmlFor='audio'>Audio</label>
         <input data-testid='audio' name='audio' type='file' accept='.wav, .aif' />
+
+        <input name='submit' type='submit' value='Upload' />
       </form>
     </div>
   );

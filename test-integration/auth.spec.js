@@ -20,7 +20,7 @@ describe('auth', () => {
     });
 
     it('should bounce when no credentials are provided', async () => {
-      await request.get('/test-secure.html')
+      await request.get('/api/status')
         .expect(401)
       ;
     });
@@ -34,8 +34,8 @@ describe('auth', () => {
       ;
     });
 
-    it('index', async () => {
-      await request.get('/test-secure.html')
+    it('status', async () => {
+      await request.get('/api/status')
         .set("Authorization", `Bearer ${token}`)
         .expect(200)
       ;
