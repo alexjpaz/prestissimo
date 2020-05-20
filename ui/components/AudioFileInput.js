@@ -35,6 +35,7 @@ export const AudioFileInput = ({ onClose = NOOP }) => {
       const dataUri = await loadAudioFile(file);
 
       setData({
+        file,
         fileLoaded: true,
         dataUri
       });
@@ -45,32 +46,47 @@ export const AudioFileInput = ({ onClose = NOOP }) => {
     }
   };
 
-  return (
-    <React.Fragment>
-      { data.fileLoaded &&
-      <audio data-testid='file-loaded' controls src={data.dataUri}> </audio>
-      }
-      <div className="file">
-        <label className="file-label">
-          <input
-            hidden
-            ref={fileRef}
-            data-testid='file'
-            name='file'
-            type='file'
-            accept=".wav, .aif"
-            onChange={onChange} />
+  const play = () => {
+    const audio = new Audio();
+    audio.src = data.dataUri;
+    audio.play();
+  }
 
-          <span className="file-cta">
-            <span className="file-icon">
-              <i className="fas fa-upload"></i>
+  const fileInput = (
+    <input
+      hidden
+      ref={fileRef}
+      data-testid='file'
+      name='file'
+      type='file'
+      accept=".wav, .aif"
+      onChange={onChange} />
+  );
+
+  return (
+    <div>
+      <div class="file has-name">
+        <button class="button is-info" disabled={!data.dataUri} onClick={play}>
+          <i class="fas fa-play"></i>
+        </button>
+        <label class="file-label">
+          {fileInput}
+          <span class="file-cta">
+            <span class="file-icon">
+              <i class="fas fa-upload"></i>
             </span>
-            <span className="file-label">
+            <span class="file-label">
               Choose a file…
             </span>
           </span>
-        </label>
-      </div>
-    </React.Fragment>
+          { data.file &&
+              <span class="file-name">
+                {data.file.name}
+              </span>
+          }
+            </label>
+
+          </div>
+        </div>
   );
 }
