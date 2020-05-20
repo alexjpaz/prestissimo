@@ -11,7 +11,7 @@
     "pretest": "./scripts/wait-until-localstack-is-ready && ./scripts/provision-localstack",
     "build": "npm run build:webpack",
     "build:webpack": "webpack -p",
-    "build:storybook": "storybook -",
+    "build:storybook": "build-storybook",
     "test:mocha": "NODE_ENV=test mocha -t 20000 --forbid-only --exclude='node_modules/**/*' 'src/**/*.spec.js'",
     "test:ui": "jest --testPathPattern ui",
     "test": "npm run test:mocha && npm run test:ui",
