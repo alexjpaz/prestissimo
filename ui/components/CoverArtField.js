@@ -31,7 +31,7 @@ export function CoverArtField({ value = "Track Title" }) {
     var fontsize=1000;
 
     do{
-        fontsize--;
+        fontsize -= 10;
         context.font=`bold ${fontsize}px ${fontFace}`;
     }while(context.measureText(text).width>canvas.width)
 
