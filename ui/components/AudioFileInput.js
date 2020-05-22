@@ -21,14 +21,14 @@ const loadAudioFile = async (file) => {
   });
 };
 
-export const AudioFileInput = ({ onClose = NOOP }) => {
+export const AudioFileInput = ({ onFileChange = NOOP }) => {
   const fileRef = React.useRef(null);
 
   const [ data, setData ] = React.useState({
     fileLoaded: false
   });
 
-  const onChange = async (e) => {
+  const handleChange = async (e) => {
     const file = e.target.files[0];
 
     try {
@@ -40,7 +40,7 @@ export const AudioFileInput = ({ onClose = NOOP }) => {
         dataUri
       });
 
-      onClose({
+      onFileChange({
         file
       });
     } catch(e) {
@@ -62,7 +62,7 @@ export const AudioFileInput = ({ onClose = NOOP }) => {
       name='file'
       type='file'
       accept=".wav, .aif"
-      onChange={onChange} />
+      onChange={handleChange} />
   );
 
   return (
