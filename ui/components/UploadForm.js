@@ -44,13 +44,31 @@ export function UploadForm() {
       items: []
     };
 
-    for(let fileinput of e.target.file) {
+    let fileinputs = [];
+
+    if(Array.isArray(e.target.file)) {
+      fileinputs = e.target.file
+    } else {
+      fileinputs = [e.target.file];
+    }
+
+    for(let fileinput of fileinputs) {
       for(let file of fileinput.files) {
         let item = {};
 
         item.id = generateId();
 
-        item.data = await FileHelper.readAsDataURL(file);
+        item.coverart = e.target.coverart.value;
+
+        item.file = {
+          name: file.name,
+          type: file.type,
+          size: file.size,
+          lastModified: file.lastModified,
+          lastModifiedDate: file.lastModifiedDate,
+        };
+
+        //item.data = await FileHelper.readAsDataURL(file);
 
         item.targets = [
           { format: "mp3" } // TODO
@@ -59,7 +77,9 @@ export function UploadForm() {
         manifest.items.push(item);
       }
     }
-    //setData({ manifest });
+
+
+    setManifest({ manifest });
   };
 
   return (
@@ -116,6 +136,7 @@ export function UploadForm() {
           </div>
         </form>
       </section>
+      <pre>{JSON.stringify(manifest,null,2)}</pre>
     </div>
     );
     }
