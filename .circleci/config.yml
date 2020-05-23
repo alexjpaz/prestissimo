@@ -16,6 +16,7 @@ jobs:
       name: node/default
     steps:
       - checkout
+      - run: "./scripts/prebuild-check"
       - node/with-cache:
           steps:
             - run: echo 'export PATH=./opt/:$PATH' >> $BASH_ENV
