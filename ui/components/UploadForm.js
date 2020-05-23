@@ -64,11 +64,13 @@ export function UploadForm({ onUpload }) {
           name: file.name,
           type: file.type,
           size: file.size,
+          data: {
+            dataUrl: await FileHelper.readAsDataURL(file),
+          },
           lastModified: file.lastModified,
           lastModifiedDate: file.lastModifiedDate,
         };
 
-        item.data = await FileHelper.readAsDataURL(file);
 
         item.targets = [
           { format: "mp3" } // TODO
