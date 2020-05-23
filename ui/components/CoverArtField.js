@@ -19,6 +19,13 @@ export function CoverArtField({ value = "Track Title" }) {
     canvas.height = 1024;
 
     const context = canvas.getContext("2d");
+
+    if(!context) {
+      // TODO
+      console.warn("Canvas context not supported in this environment");
+      return setDataUrl();
+    }
+
     context.textBaseline = 'middle';
     context.textAlign = "center";
 
