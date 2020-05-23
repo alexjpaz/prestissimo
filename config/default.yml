@@ -1,6 +1,5 @@
 ---
 authorizer:
-  audience: "https://prestissimo.alexjpaz.com"
-  issuer: "https://alexjpaz.auth0.com/"
-  jwksUri: "https://alexjpaz.auth0.com/.well-known/jwks.json"
+  # FIXME - BAD NEWS BEARS
+  usePassthrough: true
 awsRegion: 'us-east-1'

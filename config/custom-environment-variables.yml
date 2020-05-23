@@ -1,7 +1,4 @@
 ---
-authorizer:
-  # FIXME - BAD NEWS BEARS
-  usePassthrough: USE_AUTH_PASSTHROUGH
 awsBucket: awsBucket
 logger:
   level: LOGGER_LEVEL
