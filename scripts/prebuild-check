@@ -1,14 +1,14 @@
 #!/bin/bash
-set -e
+set -o pipefail
 
-RESULTS=$(git grep -l '@wip' src)
+RESULTS=$(git grep -l '@wip' ./src)
 if [[ $RESULTS ]]; then
     echo "Error! Found @wip tests"
     echo "${RESULTS}"
-    exit 2;
+    exit 1;
 fi
 
-RESULTS=$(git grep -l '@wip' ui)
+RESULTS=$(git grep -l '@wip' ./ui)
 if [[ $RESULTS ]]; then
     echo "Error! Found @wip tests"
     echo "${RESULTS}"
