@@ -45,6 +45,20 @@ const Authorizer = (props = config.authorizer) => {
   };
 
   const authenticate = (params) => {
+    //// TOOOOOODOOOOOOOOOOOO
+    // FIXME
+    if(props.usePassthrough) {
+      logger.warn("DEBUG MODE USING PASSTHROUGH AUTH");
+      return Promise.resolve({
+        principalId: "TEST_PRINCIPAL_ID",
+        policyDocument: getPolicyDocument('Allow', params.methodArn),
+        context: { scope: ['stuff'] }
+      });
+    }
+
+    http://localhost:9009/iframe.html?id=app--with-default
+
+    /////
     logger.debug('params', params);
     const token = getToken(params);
 
