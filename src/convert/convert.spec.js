@@ -17,7 +17,7 @@ const generateId = () => {
 
 describe('convert', () => {
 
-  describe('@wip manifest', () => {
+  describe('manifest', () => {
     let manifest;
     beforeEach(async () => {
       manifest = {
