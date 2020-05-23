@@ -13,12 +13,11 @@ test('renders', () => {
 });
 
 test('read file', async () => {
-  const onClose = jest.fn();
-  const { getByTestId, findByTestId } = render(<AudioFileInput onClose={onClose} />);
+  const onFileChange = jest.fn();
+  const { getByTestId, findByTestId } = render(<AudioFileInput onFileChange={onFileChange} />);
   const fileElement = getByTestId(/file/i);
   expect(fileElement).toBeInTheDocument();
 
-  //const fakeContent = await fs.readFile('./test/examples/simplescale.wav');
   const fakeContent = Buffer.from("FAKE_BINARY_DATA");
 
   const fakeFile = new File([fakeContent], "simplescale.wav", {
@@ -33,7 +32,7 @@ test('read file', async () => {
 
   await findByTestId(/file-name/);
 
-  expect(onClose).toHaveBeenCalledWith({
+  expect(onFileChange).toHaveBeenCalledWith({
     file: fakeFile
   });
 });
