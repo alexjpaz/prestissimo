@@ -56,8 +56,6 @@ const Authorizer = (props = config.authorizer) => {
       });
     }
 
-    http://localhost:9009/iframe.html?id=app--with-default
-
     /////
     logger.debug('params', params);
     const token = getToken(params);

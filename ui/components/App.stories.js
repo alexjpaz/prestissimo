@@ -25,13 +25,16 @@ export const withMockServer = () => {
 };
 
 export const withLocalServer = () => {
-  // TODO
   let value = {
-
     user: {
       name: "Test User",
     },
-    uploadTrack: action('uploadTrack')
+    uploadTrack: async () => {
+      const json = await fetch("http://localhost:3000/dev/api/status")
+        .then(r => r.json());
+
+      action("status")(json);
+    }
   };
 
   return (
