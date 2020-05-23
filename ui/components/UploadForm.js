@@ -11,7 +11,7 @@ const generateId = () => {
   return window.crypto.getRandomValues(new Uint32Array(1)).toString(32)
 };
 
-export function UploadForm() {
+export function UploadForm({ onUpload }) {
   const [ manifest, setManifest ] = React.useState({});
 
   const [ form, setForm ] = React.useState({});
@@ -68,7 +68,7 @@ export function UploadForm() {
           lastModifiedDate: file.lastModifiedDate,
         };
 
-        //item.data = await FileHelper.readAsDataURL(file);
+        item.data = await FileHelper.readAsDataURL(file);
 
         item.targets = [
           { format: "mp3" } // TODO
@@ -78,6 +78,7 @@ export function UploadForm() {
       }
     }
 
+    onUpload(manifest);
 
     setManifest({ manifest });
   };
@@ -136,7 +137,6 @@ export function UploadForm() {
           </div>
         </form>
       </section>
-      <pre>{JSON.stringify(manifest,null,2)}</pre>
     </div>
     );
     }

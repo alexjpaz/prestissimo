@@ -8,5 +8,8 @@ export default {
 };
 
 export const withDefault = () => (
-  <UploadForm />
+  <UploadForm onUpload={(e) => {
+    e.items[0].data = e.items[0].data.slice(0,30) + "__TRUNCATED__";
+    action('onUpload')(e);
+  }}/>
 );
