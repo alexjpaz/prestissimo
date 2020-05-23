@@ -28,6 +28,8 @@ jobs:
   deploy:
     docker:
       - image: circleci/node:13
+        environment:
+          NODE_APP_INSTANCE: deployed
     executor:
       name: node/default
     steps:

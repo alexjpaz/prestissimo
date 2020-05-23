@@ -7,7 +7,7 @@ provider:
   deploymentBucket:
     name: shared-private-bucket.alexjpaz.com
   environment:
-    NODE_APP_INSTANCE: deployed
+    NODE_APP_INSTANCE: ${env:NODE_APP_INSTANCE}
     awsBucket: "${self:custom.bucketName}"
 
   s3:
