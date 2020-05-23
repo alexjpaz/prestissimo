@@ -53,9 +53,9 @@ export function CoverArtField({ value = "Track Title" }) {
   }, [ value ]);
 
   return (
-    <div class="field">
-      <label class="label">Cover Art</label>
-      <div class="control">
+    <div className="field">
+      <label className="label">Cover Art</label>
+      <div className="control">
         <input type='hidden' name='coverart' defaultValue={dataURL} />
         <img src={dataURL} />
       </div>

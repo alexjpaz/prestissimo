@@ -85,42 +85,42 @@ export function UploadForm({ onUpload }) {
 
   return (
     <div data-testid='UploadForm'>
-      <section class="hero is-primary">
-        <div class="hero-body">
-          <div class="container">
-            <h1 class="title">
+      <section className="hero is-primary">
+        <div className="hero-body">
+          <div className="container">
+            <h1 className="title">
               Upload Track
             </h1>
           </div>
         </div>
       </section>
-      <section class="section">
+      <section className="section">
         <form onSubmit={onSubmit}>
-          <div class="columns">
-            <div class="column is-one-quarter">
+          <div className="columns">
+            <div className="column is-one-quarter">
               <CoverArtField value={form.title} />
             </div>
-            <div class="column">
-              <div class="field">
-                <label class="label">Track Title</label>
-                <div class="control">
-                  <input class="input" name="title" defaultValue={form.title} onChange={updateField('title')} type="text" placeholder="Name the track" />
+            <div className="column">
+              <div className="field">
+                <label className="label">Track Title</label>
+                <div className="control">
+                  <input className="input" name="title" defaultValue={form.title} onChange={updateField('title')} type="text" placeholder="Name the track" />
                 </div>
               </div>
-              <div class="field">
-                <label class="label">Tags</label>
-                <div class="control">
-                  <input class="input" name="tags" type="text" placeholder="Space separated tags (e.g. chill hiphop)" />
+              <div className="field">
+                <label className="label">Tags</label>
+                <div className="control">
+                  <input className="input" name="tags" type="text" placeholder="Space separated tags (e.g. chill hiphop)" />
                 </div>
               </div>
-              <div class="field">
-                <label class="label">Description</label>
-                <div class="control">
-                  <textarea class="textarea" name="description" placeholder="Description of the track"></textarea>
+              <div className="field">
+                <label className="label">Description</label>
+                <div className="control">
+                  <textarea className="textarea" name="description" placeholder="Description of the track"></textarea>
                 </div>
               </div>
-              <div class="field">
-                <div class="control">
+              <div className="field">
+                <div className="control">
                   <AudioFileInput onFileChange={handleFileChange} />
                 </div>
               </div>
