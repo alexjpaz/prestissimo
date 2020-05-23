@@ -6,7 +6,7 @@
   "scripts": {
     "start": "serverless offline",
     "start:ui": "webpack-dev-server",
-    "storybook": "start-storybook",
+    "storybook": "start-storybook -p 9009",
     "postinstall": "./scripts/download-dependencies.sh",
     "pretest": "./scripts/wait-until-localstack-is-ready && ./scripts/provision-localstack",
     "build": "npm run build:webpack",
