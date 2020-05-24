@@ -73,7 +73,7 @@ const convertAndUpload = async (item, context) => {
           'Uploading converted object');
 
         let Key = [
-          'uploads',
+          'conversions',
           item.id,
           context.awsRequestId,
           format,
