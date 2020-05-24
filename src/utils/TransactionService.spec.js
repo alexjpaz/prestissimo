@@ -64,11 +64,19 @@ describe('@wip TransactionService', () => {
 
     expect(rsp.items.length).to.be.eql(0);
 
-    await service.create(userId);
+    let creates = [
+      await service.create(userId),
+      await service.create(userId),
+      await service.create(userId),
+    ];
+
+    creates = await Promise.all(creates);
 
     rsp = await service.findAll(userId);
 
-    expect(rsp.items.length).to.be.eql(1);
+    expect(rsp.items.length).to.be.eql(creates.length);
+
+    expect(rsp.items[0].id).to.eql(creates[creates.length-1].transactionId, "Should be ordered - last item created is first item returned");
   });
 
   it('find', async () => {

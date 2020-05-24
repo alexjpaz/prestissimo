@@ -5,7 +5,7 @@ const { logger } = require('./logger');
 const AWS = require('./AWS');
 
 const generateTransactionId = () => {
-  let transactionId = new Date().toISOString();
+  let transactionId = `ts=${new Date().getTime().toString()}`;
 
   return transactionId;
 };
