@@ -30,11 +30,13 @@ class TransactionService {
 
       let item = JSON.parse(rsp.Body);
 
-      return{
+      item = {
+        ...item,
         userId,
         transactionId,
-        item,
       };
+
+      return item;
     } catch(e) {
       logger.error(e);
       throw e;
@@ -99,14 +101,12 @@ class TransactionService {
         .map(c => c.Key)
         .map(c => c.replace(Prefix, ''))
         .map(c => c.replace('/status.json', ''))
-        .map(c => ({ id: c }))
+        .map(c => ({ transactionId: c }))
       ;
 
       items.reverse();
 
-      return {
-        items,
-      };
+      return items;
     } catch(e) {
       logger.error(e);
       throw e;

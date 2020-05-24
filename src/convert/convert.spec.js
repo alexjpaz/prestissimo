@@ -20,13 +20,27 @@ describe('convert', () => {
   describe('manifest', () => {
     let manifest;
     beforeEach(async () => {
+      let data = await fs.readFile('./test/examples/simplescale.wav');
+
+      let dataUrl = data.toString('base64');
+
       manifest = {
         version: 1,
         items: [
           {
             id: generateId(),
-            name: "simplescale.wav",
-            data: (await fs.readFile('./test/examples/simplescale.wav')).toString('base64'),
+            coverart: Buffer.alloc(0),
+
+            file: {
+              name: "simplescale.wav",
+              type: "audio/wav",
+              size: data.length,
+              data: {
+                dataUrl,
+              },
+              lastModified: new Date().getTime(),
+              lastModifiedDate: new Date(),
+            },
             targets: [
               { format: "mp3" }
             ],
@@ -71,7 +85,7 @@ describe('convert', () => {
 
       let objects = await s3.listObjectsV2({
         Bucket: config.awsBucket,
-        Prefix: `uploads/${manifestId}/${context.awsRequestId}`
+        Prefix: `conversions/${manifestId}/${context.awsRequestId}`
       }).promise();
 
       expect(objects.KeyCount).to.be.above(0);

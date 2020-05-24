@@ -6,6 +6,7 @@ const os = require('os');
 
 const AWS = require('../utils/aws');
 const { logger } = require('../utils/logger');
+const { TransactionService } = require('../utils/TransactionService');
 
 const fs = require('fs').promises;
 
@@ -14,11 +15,15 @@ const { Transactions } = require('./transactions');
 const { Debug } = require('./debug');
 
 const defaultProps = () => ({
-  s3: new AWS.S3()
+  s3: new AWS.S3(),
+  transactionService: TransactionService.standard(),
 });
 
 const Router = (props = defaultProps()) => {
-  const { s3 } = props;
+  const {
+    s3,
+    transactionService,
+  } = props;
 
   const app = express();
 

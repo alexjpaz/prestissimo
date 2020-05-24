@@ -7,33 +7,37 @@ const supertest = require('supertest');
 
 const fs = require('fs').promises;
 
-const Router = require('./router');
+const { Transactions } = require('./Transactions');
 
 const AWS = require('../utils/aws');
+const { TransactionService } = require('../utils/TransactionService');
 
 const generateId = require('../utils/generateId');
 
-describe('transactions', () => {
+describe('http/transactions', () => {
   let request;
 
   let mockS3;
+  let transactionService;
 
   let userId = generateId();
 
   beforeEach(() => {
     mockS3 = new AWS.S3();
+    transactionService = TransactionService.standard();
 
     let app = express();
 
-    app.use((req, res, next) => {
+    app.use('/api', (req, res, next) => {
       req.user = {
         userId,
       };
       next();
     });
 
-    app.use(Router({
-      s3: mockS3
+    app.use('/api', Transactions({
+      s3: mockS3,
+      transactionService,
     }));
 
     request = supertest(app);
@@ -41,33 +45,22 @@ describe('transactions', () => {
 
   describe('transactions', () => {
 
+    let createUserId;
     let transactionId;
 
     beforeEach(async () => {
-      let timestamp = new Date();
+      createUserId = userId;
+      let item = await transactionService.create(createUserId);
 
-      transactionId = `${timestamp.toISOString()}/${generateId()}`;
-
-      let transaction = {
-        id: transactionId,
-        timestamp,
-      };
-
-      let Body = JSON.stringify(transaction);
-
-      await mockS3.putObject({
-        Bucket: config.awsBucket,
-        Key: `users/${userId}/transactions/${transactionId}`,
-        Body,
-      }).promise();
+      ({ transactionId } = item);
     });
 
-    it('should list transactions', async () => {
+    it('should list transactions @wip', async () => {
       const rsp = await request.get('/api/transactions')
         .expect(200)
       ;
 
-      expect(rsp.body.data.items[0].id).to.eql(transactionId);
+      expect(rsp.body.data[0].transactionId).to.eql(transactionId);
     });
 
     it('should fetch a transaction', async () => {
@@ -75,7 +68,8 @@ describe('transactions', () => {
         .expect(200)
       ;
 
-      expect(rsp.body.data.item.id).to.eql(transactionId);
+      expect(rsp.body.data.item.transactionId).to.eql(transactionId);
+      expect(rsp.body.data.item.userId).to.eql(createUserId);
     });
 
     it('should create a transaction request', async () => {
@@ -83,7 +77,8 @@ describe('transactions', () => {
         .expect(200)
       ;
 
-      expect(rsp.body.data.item.id).to.eql(transactionId);
+      expect(rsp.body.data.transactionId).to.be.a('String');
+      expect(rsp.body.data.userId).to.be.eql(createUserId);
     });
   });
 });
