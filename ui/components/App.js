@@ -1,5 +1,7 @@
 import React from 'react';
 
+import { Navbar } from './layout/Navbar';
+
 import { UploadForm } from './UploadForm';
 
 import { AppContext } from './AppContext';
@@ -9,7 +11,7 @@ export function App() {
 
   return (
     <div data-test-id='App-root'>
-      <h1>client = {ctx.user.name}</h1>
+      <Navbar />
       <UploadForm onUpload={ctx.uploadTrack} />
     </div>
   );
