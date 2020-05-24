@@ -9,7 +9,7 @@ export function Navbar() {
     <nav className="navbar" role="navigation" aria-label="main navigation">
       <div className="navbar-brand">
         <a className="navbar-item" href="/">
-            <span class="icon">
+            <span className="icon">
               <i className='fas fa-music'> </i>
             </span>
             <span>prestissimo</span>
