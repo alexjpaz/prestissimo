@@ -78,14 +78,12 @@ describe('transactions', () => {
       expect(rsp.body.data.item.id).to.eql(transactionId);
     });
 
-    it('@wip should create a transaction request', async () => {
+    it('should create a transaction request', async () => {
       const rsp = await request.put(`/api/transactions`)
         .expect(200)
       ;
 
-      console.log(rsp);
-
-      expect(rsp.body).to.eql({});
+      expect(rsp.body.data.item.id).to.eql(transactionId);
     });
   });
 });

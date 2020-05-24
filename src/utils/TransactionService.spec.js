@@ -1,0 +1,84 @@
+const { expect } = require('chai');
+
+const generateId = require('./generateId');
+
+const { TransactionService } = require('./TransactionService');
+
+describe('@wip TransactionService', () => {
+  let userId;
+
+  let service;
+
+  beforeEach(() => {
+    userId = generateId();
+    service = new TransactionService();
+  });
+
+  describe('create', () => {
+    let createUserId;
+    let rsp;
+
+    beforeEach(async () => {
+      if(!rsp) {
+        createUserId = userId;
+        rsp = await service.create(createUserId);
+      }
+    });
+
+    it('should have a userId', async () => {
+      expect(rsp.userId).to.be.eql(createUserId);
+    });
+
+    it('should have a transactionId', async () => {
+      expect(rsp.transactionId).to.be.a("String");
+    });
+
+    it('should have an upload object', async () => {
+      expect(rsp.upload).to.be.a("Object");
+    });
+
+    describe('should have an signed URL', () => {
+
+      it('httpMethod', () => {
+        expect(rsp.upload.httpMethod).to.be.eql("PUT");
+      });
+
+      it('AWSAccessKeyId sanity', () => {
+        expect(rsp.upload.url).to.include("AWSAccessKeyId");
+      });
+
+      it('userId' , () => {
+        expect(rsp.upload.url).to.include(createUserId);
+      });
+
+      it('transactionId' , () => {
+        expect(rsp.upload.url).to.include(encodeURIComponent(rsp.transactionId));
+      });
+    });
+  });
+
+  it('findAll', async () => {
+    let rsp;
+
+    rsp = await service.findAll(userId);
+
+    expect(rsp.items.length).to.be.eql(0);
+
+    await service.create(userId);
+
+    rsp = await service.findAll(userId);
+
+    expect(rsp.items.length).to.be.eql(1);
+  });
+
+  it('find', async () => {
+    let rsp;
+
+    rsp = await service.create(userId);
+
+    rsp = await service.find(userId, rsp.transactionId);
+
+    expect(rsp.item.status).to.be.eql("CREATED");
+    expect(rsp.userId).to.be.eql(userId);
+  });
+});
