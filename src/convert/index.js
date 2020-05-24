@@ -34,10 +34,7 @@ const convertAndUpload = async (item, context) => {
 
         let base64Data = dataUrl.slice(dataUrl.indexOf(',')+1);
 
-        console.log(base64Data.slice(0,5));
-
         let inputBuffer = Buffer.from(base64Data, 'base64');
-
 
         let inputStream = new stream.Readable();
         inputStream.push(inputBuffer);

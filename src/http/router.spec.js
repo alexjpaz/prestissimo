@@ -159,8 +159,6 @@ describe('http/router', () => {
       const req = await superagent.put(url)
         .send(buffer);
 
-      console.log(req);
-
       const headRsp = await mockS3.headObject({
         Bucket: config.awsBucket,
         Key: 'foobar', // FIXME
