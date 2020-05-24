@@ -39,7 +39,7 @@ describe('transactions', () => {
     request = supertest(app);
   });
 
-  describe('@wip transactions', () => {
+  describe('transactions', () => {
 
     let transactionId;
 
