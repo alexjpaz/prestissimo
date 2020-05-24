@@ -10,6 +10,7 @@ const { logger } = require('../utils/logger');
 const fs = require('fs').promises;
 
 const { Status } = require('./status');
+const { Transactions } = require('./transactions');
 
 const defaultProps = () => ({
   s3: new AWS.S3()
@@ -24,55 +25,10 @@ const Router = (props = defaultProps()) => {
 
   app.use(express.static('public'))
 
-  app.use('/api', Status());
-
-  app.get('/api/transactions', async (req, res, next) => {
-    try {
-      // TODO auth
-      let userId = req.headers['x-test-user-id'];
-      let Prefix = `users/${userId}/transactions/`;
-
-      const rsp = await s3.listObjectsV2({
-        Bucket: config.awsBucket,
-        Prefix,
-      }).promise();
-
-      let items = rsp.Contents
-        .map(c => c.Key)
-        .map(c => c.replace(Prefix, ''))
-        .map(c => ({ id: c }))
-      ;
-
-      return res.send({
-        data: {
-          items,
-        }
-      });
-    } catch(e) {
-      next(e);
-    }
-  });
-
-  app.get('/api/transactions/:id', async (req, res, next) => {
-    try {
-      // TODO auth
-      let userId = req.headers['x-test-user-id'];
-      let Prefix = `users/${userId}/transactions/`;
-
-      const rsp = await s3.listObjectsV2({
-        Bucket: config.awsBucket,
-        Key: `${Prefix}/${req.params.id}`
-      }).promise();
-
-      return res.send({
-        data: {
-          objects
-        }
-      });
-    } catch(e) {
-      next(e);
-    }
-  });
+  app.use('/api', [
+    Status(),
+    Transactions({ s3 }),
+  ]);
 
   app.put('/upload/signed-url', async (req, res, next) => {
     try {

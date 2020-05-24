@@ -10,6 +10,8 @@ const Router = require('./router');
 
 const AWS = require('../utils/aws');
 
+const generateId = require('../utils/generateId');
+
 describe('http/router', () => {
   let request;
 
