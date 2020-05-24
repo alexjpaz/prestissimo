@@ -11,6 +11,7 @@ const fs = require('fs').promises;
 
 const { Status } = require('./status');
 const { Transactions } = require('./transactions');
+const { Debug } = require('./debug');
 
 const defaultProps = () => ({
   s3: new AWS.S3()
@@ -25,9 +26,22 @@ const Router = (props = defaultProps()) => {
 
   app.use(express.static('public'))
 
+  // FIXME
+  app.use('/api', (req, res, next) => {
+    req.user = {
+      userId: "FAKE_LOCAL",
+    };
+
+    next();
+  });
+
   app.use('/api', [
     Status(),
     Transactions({ s3 }),
+  ]);
+
+  app.use('/restricted', [
+    Debug()
   ]);
 
   app.put('/upload/signed-url', async (req, res, next) => {

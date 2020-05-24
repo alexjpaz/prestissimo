@@ -29,11 +29,40 @@ export const withLocalServer = () => {
     user: {
       name: "Test User",
     },
-    uploadTrack: async () => {
-      const json = await fetch("http://localhost:3000/dev/api/status")
-        .then(r => r.json());
+    uploadTrack: async (manifest) => {
+      action("manifest")(manifest);
+      try {
+        // FIXME
+        //
+        let endpoint = "http://localhost:3000/dev";
 
-      action("status")(json);
+        let rsp = await fetch(`${endpoint}/api/transactions`, {
+          method: "PUT",
+        })
+          .then(r => r.json());
+
+        action("transaction")(rsp);
+
+        let { upload } = rsp.data;
+
+        await fetch(upload.url, {
+          method: upload.httpMethod,
+          body: JSON.stringify(manifest),
+        });
+
+        // FIXME - Bad
+        (async function check() {
+          let transactionStatus = await fetch(`${endpoint}/api/transactions/${rsp.data.transactionId}`)
+            .then(r => r.json());
+
+          if(transactionStatus.data.item.status !== 'DONE') {
+            setTimeout(check, 2000);
+          }
+        })();
+      } catch(e) {
+        console.error(e);
+        throw e;
+      }
     }
   };
 

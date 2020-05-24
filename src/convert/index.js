@@ -30,8 +30,15 @@ const convertAndUpload = async (item, context) => {
       let { format } = target;
 
       try {
-        // FIXME - move this out!
-        let inputBuffer = Buffer.from(item.data, 'base64');
+        let { dataUrl } = item.file.data;
+
+        let base64Data = dataUrl.slice(dataUrl.indexOf(',')+1);
+
+        console.log(base64Data.slice(0,5));
+
+        let inputBuffer = Buffer.from(base64Data, 'base64');
+
+
         let inputStream = new stream.Readable();
         inputStream.push(inputBuffer);
         inputStream.push(null);
@@ -56,7 +63,7 @@ const convertAndUpload = async (item, context) => {
           }
         });
 
-        const command = await ffmpeg(inputStream)
+        const command = ffmpeg(inputStream)
           .format(format)
           .output(outputStream);
 
@@ -107,9 +114,16 @@ const processRecord = async (Record, context) => {
     const item = manifest.items[0];
 
     await convertAndUpload(item, context);
+
+    const rsp = await s3.deleteObject({
+      Bucket: Record.s3.bucket.name,
+      Key: Record.s3.object.key,
+    }).promise();
+
   } catch(e) {
     throw e;
   }
+
 };
 
 module.exports.convert = async (event, context) => {
@@ -125,4 +139,9 @@ module.exports.convert = async (event, context) => {
     logger.error(e);
     throw e;
   }
+
+  return {
+    Records: event.Records,
+    status: "OK",
+  };
 };
