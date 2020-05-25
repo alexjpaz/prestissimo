@@ -5,13 +5,11 @@ const { logger } = require('../utils/logger');
 const { TransactionService } = require('../utils/TransactionService');
 
 const defaultProps = () => ({
-  s3: new AWS.S3(),
   transactionService: TransactionService.standard()
 });
 
 const Transactions = (props = defaultProps()) => {
   const {
-    s3,
     transactionService,
   } = props;
 

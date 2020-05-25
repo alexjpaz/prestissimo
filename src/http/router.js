@@ -42,7 +42,7 @@ const Router = (props = defaultProps()) => {
 
   app.use('/api', [
     Status(),
-    Transactions({ s3 }),
+    Transactions({ transactionService }),
   ]);
 
   app.use('/restricted', [
