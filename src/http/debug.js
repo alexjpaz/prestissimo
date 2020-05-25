@@ -4,6 +4,8 @@ const config = require('config');
 
 const AWS = require('../utils/aws');
 
+const { logger } = require('../utils/logger');
+
 const Debug = () => {
   if(process.env.NODE_ENV !== 'test') {
     return (req, res, next) => {
@@ -11,7 +13,7 @@ const Debug = () => {
     };
   }
 
-  console.warn("RESTRICTED DEBUG ROUTE IS ENABLED!!!");
+  logger.warn("RESTRICTED DEBUG ROUTE IS ENABLED!!!");
 
   const app = express();
 
