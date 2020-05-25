@@ -72,9 +72,11 @@ class S3TransactionService {
 
       let transactionPrefix = `users/${userId}/transactions/${transactionId}`;
 
+      let manifestKey = `inbox/${transactionPrefix}/manifest.json`;
+
       const url = await this.s3.getSignedUrlPromise('putObject', {
         Bucket: config.awsBucket,
-        Key: `inbox/${transactionPrefix}/manifest.json`,
+        Key: manifestKey,
         Expires: 300,
       });
 
@@ -98,6 +100,7 @@ class S3TransactionService {
         transactionId,
         upload: {
           httpMethod: 'PUT',
+          manifestKey,
           url,
         },
       };

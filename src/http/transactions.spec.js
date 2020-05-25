@@ -81,4 +81,35 @@ describe('http/transactions', () => {
       expect(rsp.body.data.userId).to.be.eql(createUserId);
     });
   });
+
+  describe('upload', () => {
+    let createUserId;
+    let transaction;
+
+    beforeEach(async () => {
+      createUserId = userId;
+      transaction = await transactionService.create(createUserId);
+    });
+
+    it('should upload a file via PUT', async () => {
+      let {
+        url,
+        httpMethod,
+      } = transaction.upload;
+
+      const buffer = Buffer.from("test");
+
+      const req = await superagent.put(url)
+        .send(buffer);
+
+      const headRsp = await mockS3.headObject({
+        Bucket: config.awsBucket,
+        Key: transaction.upload.manifestKey,
+      }).promise();
+
+      expect(headRsp.ContentLength).not.to.eql(0);
+      expect(headRsp.ContentLength).to.eql(buffer.length);
+    });
+
+  });
 });
