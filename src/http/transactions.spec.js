@@ -55,7 +55,7 @@ describe('http/transactions', () => {
       ({ transactionId } = item);
     });
 
-    it('should list transactions @wip', async () => {
+    it('should list transactions', async () => {
       const rsp = await request.get('/api/transactions')
         .expect(200)
       ;

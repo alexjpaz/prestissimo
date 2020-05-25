@@ -9,7 +9,7 @@ const very_much_not_secure  = require('../../test/very_much_not_secure/jwks.json
 
 const Authorizer = require('./authorizer');
 
-describe('authorizer', () => {
+describe('@wip authorizer', () => {
   let app;
   let server;
   let authorizer;
@@ -101,4 +101,5 @@ describe('authorizer', () => {
       expect(result.policyDocument.Statement[0].Resource).to.include("ymy8tbxw7b");
     });
   });
+
 });
