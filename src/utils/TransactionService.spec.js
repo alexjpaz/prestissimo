@@ -4,7 +4,7 @@ const generateId = require('./generateId');
 
 const { TransactionService } = require('./TransactionService');
 
-describe('@wip TransactionService', () => {
+describe('TransactionService', () => {
   let randomUserId;
   let userId;
 
