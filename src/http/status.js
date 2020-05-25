@@ -56,13 +56,18 @@ const Status = (s3 = new AWS.S3()) => {
   const app = express();
 
   const checks = [{
+    name: "config",
+    check: async () => {
+      return config
+    }
+  },{
     name: "s3",
     check: async () => {
       const s3 = new AWS.S3();
 
-      //const rsp = await s3.headBucket({
-        //Bucket: config.awsBucket
-      //}).promise();
+      const rsp = await s3.headBucket({
+        Bucket: config.awsBucket
+      }).promise();
     }
   },];
 
@@ -87,7 +92,7 @@ const Status = (s3 = new AWS.S3()) => {
     res.send({
       status,
       timestamp: new Date(),
-      checks,
+      checks: results,
     });
   })
 
