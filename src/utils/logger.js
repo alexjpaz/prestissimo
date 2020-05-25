@@ -13,10 +13,10 @@ let appenders = {
   console,
 };
 
-let logger = appenders[config.logger.appender];
+let logger = pino;
 
-if(!logger) {
-  logger = pino;
+if(config && config.logger && config.logger.appender) {
+  logger = appenders[config.logger.appender];
 }
 
 logger.info("logger initialized", config.logger);
