@@ -1,5 +1,4 @@
 ---
 authorizer:
-  # FIXME - BAD NEWS BEARS
-  usePassthrough: true
+logger:
 awsRegion: 'us-east-1'
