@@ -4,18 +4,40 @@ const { logger } = require('./logger');
 
 const AWS = require('./AWS');
 
-const generateTransactionId = () => {
-  let transactionId = `ts=${new Date().getTime().toString()}`;
-
-  return transactionId;
-};
-
-
-// TODO - multiple implementations
-class TransactionService {
-  constructor() {
-    this.s3 = new AWS.S3();
+class S3TransactionService {
+  constructor(props = S3TransactionService.defaultProps()) {
+    this.s3 = props.s3;
   }
+
+  static defaultProps() {
+    return {
+      s3: new AWS.S3()
+    };
+  }
+
+  /**
+   * Generate a transaction key
+   *
+   * Note: According the docs "List results are always returned in UTF-8 binary order."
+   *
+   * Since we want the "findAll" method to return items ordered by the last insertion
+   * this implementation will generate an encoded timestamp id that uses a very
+   * large 64bit integer and subtract the current milliseconds. This will order the
+   * keys in a descending order.
+   *
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/ListingKeysUsingAPIs.html
+   */
+  generateTransactionId() {
+    let millis = new Date().getTime();
+
+    let max = BigInt(1) << BigInt(64);
+
+    let ts = max - BigInt(millis);
+
+    let transactionId = `ets=${ts}`;
+
+    return transactionId;
+  };
 
   async find(userId, transactionId) {
     try {
@@ -46,7 +68,7 @@ class TransactionService {
 
   async create(userId) {
     try {
-      let transactionId = generateTransactionId();
+      let transactionId = this.generateTransactionId();
 
       let transactionPrefix = `users/${userId}/transactions/${transactionId}`;
 
@@ -88,13 +110,14 @@ class TransactionService {
 
   }
 
-  async findAll(userId) {
+  async findAll(userId, nextToken) {
     try {
       let Prefix = `users/${userId}/transactions/`;
 
       const rsp = await this.s3.listObjectsV2({
         Bucket: config.awsBucket,
         Prefix,
+        ContinuationToken: nextToken,
       }).promise();
 
       let items = rsp.Contents
@@ -104,7 +127,9 @@ class TransactionService {
         .map(c => ({ transactionId: c }))
       ;
 
-      items.reverse();
+      if(rsp.IsTruncated) {
+        items.nextToken = res.NextContinuationToken
+      }
 
       return items;
     } catch(e) {
@@ -113,8 +138,12 @@ class TransactionService {
     }
   }
 
+
+}
+
+class TransactionService {
   static standard() {
-    return new TransactionService();
+    return new S3TransactionService();
   }
 }
 

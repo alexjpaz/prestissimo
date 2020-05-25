@@ -4,14 +4,19 @@ const generateId = require('./generateId');
 
 const { TransactionService } = require('./TransactionService');
 
-describe('TransactionService', () => {
+describe('@wip TransactionService', () => {
+  let randomUserId;
   let userId;
 
   let service;
 
   beforeEach(() => {
     userId = generateId();
-    service = new TransactionService();
+    randomUserId = userId;
+    service = TransactionService.standard();
+  });
+
+  it('should be constructed', () => {
   });
 
   describe('create', () => {
@@ -57,26 +62,43 @@ describe('TransactionService', () => {
     });
   });
 
-  it('findAll', async () => {
-    let items
+  describe('findAll', () => {
+    let userId = generateId();
+    let items;
+    let creates;
 
-    items = await service.findAll(userId);
+    beforeEach(async () => {
+      if(items) {
+        return;
+      }
 
-    expect(items.length).to.be.eql(0);
+      items = await service.findAll(userId);
 
-    let creates = [
-      await service.create(userId),
-      await service.create(userId),
-      await service.create(userId),
-    ];
+      expect(items.length).to.be.eql(0);
 
-    creates = await Promise.all(creates);
+      creates = [
+        await service.create(userId),
+        await service.create(userId),
+        await service.create(userId),
+      ];
 
-    items = await service.findAll(userId);
+      creates = await Promise.all(creates);
 
-    expect(items.length).to.be.eql(creates.length);
+      creates = creates.map((c, index) => {
+        c.order = index;
+        return c;
+      });
 
-    //expect(items[0].id).to.eql(creates[creates.length-1].transactionId, "Should be ordered - last item created is first item returned");
+      items = await service.findAll(userId);
+    });
+
+    it('should return list of transactions', () => {
+      expect(items.length).to.be.eql(creates.length);
+    });
+
+    it('should return a list of transaction in descending order', () => {
+      expect(items[0].transactionId).to.eql(creates[creates.length-1].transactionId, "Should be ordered - last item created is first item returned");
+    });
   });
 
   it('find', async () => {
