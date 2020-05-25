@@ -49,42 +49,6 @@ const Router = (props = defaultProps()) => {
     Debug()
   ]);
 
-  app.put('/upload/signed-url', async (req, res, next) => {
-    try {
-      const url = await s3.getSignedUrlPromise('putObject', {
-        Bucket: config.awsBucket,
-        Key: 'foobar', // FIXME
-        Expires: 300,
-      });
-
-      if(!url) {
-        throw Error("InvalidStateException: no url created");
-      }
-
-      return res.send(url);
-    } catch(e) {
-      logger.log(e);
-      return next(e);
-    }
-  });
-
-  app.post('/upload/signed-url', async (req, res, next) => {
-    s3.createPresignedPost({
-      Bucket: config.awsBucket,
-      Expires: 300,
-      Conditions: [
-        ['starts-with', '$key', 'uploads/raw/'],
-        ['content-length-range', 0, 52428800]
-      ]
-    }, function (err, data) {
-      if(err) {
-        return next(err);
-      }
-
-      res.send(data);
-    });
-  });
-
   return app;
 };
 
