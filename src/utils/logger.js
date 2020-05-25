@@ -1,6 +1,6 @@
 const config = require('config');
 
-const logger = require('pino')(Object.assign({
+let pino = require('pino')(Object.assign({
     customLevels: {
       log: 35
     }
@@ -8,7 +8,20 @@ const logger = require('pino')(Object.assign({
   config.logger,
 ));
 
-logger.info("Pino logger initialized");
+let appenders = {
+  pino,
+  console,
+};
+
+let logger = appenders[config.logger.appender];
+
+if(!logger) {
+  logger = pino;
+}
+
+logger.info("logger initialized", config.logger);
 
 module.exports.logger = logger;
+
+
 //module.exports.logger = console;

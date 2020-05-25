@@ -1,4 +1,5 @@
 ---
 awsBucket: awsBucket
 logger:
+  appender: LOGGER_APPENDER
   level: LOGGER_LEVEL
