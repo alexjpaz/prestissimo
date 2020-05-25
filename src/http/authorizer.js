@@ -2,8 +2,6 @@ const request = require('superagent');
 
 const { JWT, JWKS } = require('jose');
 
-const jwksClient = require('jwks-rsa');
-const jwt = require('jsonwebtoken');
 const util = require('util');
 
 const fs = require('fs').promises;
