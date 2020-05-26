@@ -7,7 +7,7 @@ const supertest = require('supertest');
 
 const fs = require('fs').promises;
 
-const { Transactions } = require('./Transactions');
+const { Transactions } = require('./transactions');
 
 const AWS = require('../utils/aws');
 const { TransactionService } = require('../utils/TransactionService');

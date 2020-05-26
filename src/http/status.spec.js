@@ -4,7 +4,7 @@ const sinon = require('sinon');
 const express = require('express');
 const supertest = require('supertest');
 
-const AWS = require('../utils/AWS');
+const AWS = require('../utils/aws');
 
 const {
   Status,

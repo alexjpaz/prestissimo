@@ -2,7 +2,7 @@ const express = require('express');
 
 const config = require('config');
 
-const AWS = require('../utils/AWS');
+const AWS = require('../utils/aws');
 
 const CHECK_TIMEOUT = 4500;
 const FILTER_INCLUDE_ALL = i => i;
