@@ -9,26 +9,33 @@ const { logger } = require('../utils/logger');
 const AWS = require('../utils/aws');
 const s3 = new AWS.S3();
 
-const generateId = () => {
-  // Does not need to be crypto secure
-  const data = new Date().getTime().toString();
-  return require('crypto').createHash('sha1').update(data).digest('hex');
-};
+const generateId = require('../utils/generateId');
 
-describe('convert', () => {
+const { TransactionService } = require('../utils/TransactionService');
+
+describe('@wip convert', () => {
+  let transactionService = TransactionService.standard();
 
   describe('manifest', () => {
+    let transaction;
     let manifest;
     beforeEach(async () => {
+      let userId = generateId();
+
+      transaction = await transactionService.create(userId);
+
+      let { transactionId } = transaction;
+
       let data = await fs.readFile('./test/examples/simplescale.wav');
 
       let dataUrl = data.toString('base64');
 
       manifest = {
         version: 1,
+        userId,
+        transactionId,
         items: [
           {
-            id: generateId(),
             coverart: Buffer.alloc(0),
 
             file: {
@@ -52,7 +59,7 @@ describe('convert', () => {
 
       await s3.putObject({
         Bucket: config.awsBucket,
-        Key: 'test-key2',
+        Key: transaction.upload.manifestKey,
         Body
       }).promise();
     });
@@ -67,7 +74,7 @@ describe('convert', () => {
                 name: "test-bucket.localhost",
               },
               object: {
-                key: "test-key2",
+                key: transaction.upload.manifestKey,
               }
             }
           }
@@ -80,12 +87,23 @@ describe('convert', () => {
 
       await convert(event, context);
 
+      let currentStatus = await transactionService.find(
+        manifest.userId,
+        manifest.transactionId,
+      );
+
+      expect(currentStatus.status).to.eql("SUCCESS");
+
+      expect(currentStatus.results.targets[0].key).to.eql(
+        `conversions/users/${manifest.userId}/transactions/${manifest.transactionId}/mp3`
+      );
+
       let manifestItem = manifest.items[0];
       let manifestId = manifestItem.id;
 
       let objects = await s3.listObjectsV2({
         Bucket: config.awsBucket,
-        Prefix: `conversions/${manifestId}/${context.awsRequestId}`
+        Prefix: `conversions/users/${manifest.userId}/transactions/${manifest.transactionId}/`,
       }).promise();
 
       expect(objects.KeyCount).to.be.above(0);
@@ -99,7 +117,7 @@ describe('convert', () => {
 
       expect(head.ContentLength).to.be.above(0);
       expect(head.ETag).to.be.a('string');
-      //expect(head.ContentType).to.eql('video/mkv');
+      expect(head.ContentType).to.eql('audio/x-audioish');
       expect(head.Metadata.manifestid).to.eql(manifestId);
       expect(head.Metadata.format).to.eql(manifestItem.targets[0].format);
     });

@@ -1,12 +1,14 @@
 import React from 'react';
 import { action } from '@storybook/addon-actions';
+import { withKnobs, button, text } from "@storybook/addon-knobs";
 
 import { App } from './App';
 
 import { AppContext } from './AppContext';
 
 export default {
-  title: 'App',
+  title: App.name,
+  decorators: [withKnobs]
 };
 
 export const withMockServer = () => {
@@ -25,6 +27,25 @@ export const withMockServer = () => {
 };
 
 export const withLocalServer = () => {
+  const endpoint = text("endpoint", "http://localhost:3000/dev");
+
+  button("process inbox", async () => {
+    action('processing-inbox')("started");
+
+    try {
+      const rsp = await fetch(`${endpoint}/restricted/debug/process-inbox`)
+
+      const result = await rsp.json();
+
+      action('processinig-inbox')("finished");
+      action('processinig-inbox')({
+        result,
+      });
+    } catch(e) {
+    action('processinig-inbox')("failed");
+    }
+  });
+
   let value = {
     user: {
       name: "Test User",
@@ -34,7 +55,6 @@ export const withLocalServer = () => {
       try {
         // FIXME
         //
-        let endpoint = "http://localhost:3000/dev";
 
         let rsp = await fetch(`${endpoint}/api/transactions`, {
           method: "PUT",

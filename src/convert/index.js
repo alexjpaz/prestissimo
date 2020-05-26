@@ -11,6 +11,10 @@ const createTempFile = require('../utils/createTempFile');
 
 const s3 = new AWS.S3();
 
+const { TransactionService } = require('../utils/TransactionService');
+// TODO
+let transactionService = TransactionService.standard();
+
 const getManifest = async (Record) => {
   const rsp = await s3.getObject({
     Bucket: Record.s3.bucket.name,
@@ -23,6 +27,10 @@ const getManifest = async (Record) => {
 };
 
 const convertAndUpload = async (item, context) => {
+  let results = {};
+
+  results.targets = [];
+
   try {
     logger.info({ context }, 'Converting item',);
 
@@ -71,27 +79,35 @@ const convertAndUpload = async (item, context) => {
 
         let Key = [
           'conversions',
-          item.id,
-          context.awsRequestId,
+          'users',
+          item.userId,
+          'transactions',
+          item.transactionId,
           format,
         ].join('/');
 
         await s3.putObject({
           Bucket: config.awsBucket,
           Key,
+          ContentType: 'audio/x-audioish',
           Metadata: {
-            manifestid: item.id,
             format,
           },
           Body: outputBuffer,
         }).promise();
 
+        results.targets.push({
+          format,
+          key: Key,
+        });
       } finally {
         // Cleanuop
       }
     });
 
     await Promise.all(tasks);
+
+    return results;
 
   } catch(e) {
     throw e;
@@ -106,11 +122,37 @@ const processRecord = async (Record, context) => {
   try {
     const manifest = await getManifest(Record, context);
 
+    currentStatus = await transactionService.find(
+      manifest.userId,
+      manifest.transactionId,
+    );
+
+    currentStatus.status = "PROCESSING";
+
+    await transactionService.update(
+      manifest.userId,
+      manifest.transactionId,
+      currentStatus,
+    );
+
     // FIXME - iterate all items
     // Maybe invoke other lambdas?
     const item = manifest.items[0];
 
-    await convertAndUpload(item, context);
+    // FIXME
+    item.userId = manifest.userId;
+    item.transactionId = manifest.transactionId;
+
+    const results = await convertAndUpload(item, context);
+
+    currentStatus.status = "SUCCESS";
+    currentStatus.results = results;
+
+    await transactionService.update(
+      manifest.userId,
+      manifest.transactionId,
+      currentStatus,
+    );
 
     const rsp = await s3.deleteObject({
       Bucket: Record.s3.bucket.name,

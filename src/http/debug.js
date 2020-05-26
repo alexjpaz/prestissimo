@@ -58,7 +58,10 @@ const Debug = () => {
 
       res.send(response);
     } catch(e) {
-      next(e);
+
+      return res.status(500).send({
+        error: e,
+      });
     }
   });
 

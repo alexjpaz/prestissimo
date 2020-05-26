@@ -4,6 +4,11 @@ const { logger } = require('./logger');
 
 const AWS = require('./aws');
 
+const Exception = require('./Exception');
+
+class TransactionServiceError extends Exception {
+}
+
 class S3TransactionService {
   constructor(props = S3TransactionService.defaultProps()) {
     this.s3 = props.s3;
@@ -39,6 +44,13 @@ class S3TransactionService {
     return transactionId;
   };
 
+  throwError(message, cause) {
+    logger.debug(cause);
+    let err = new TransactionServiceError(message, cause);
+    throw err;
+
+  }
+
   async find(userId, transactionId) {
     try {
       let Prefix = `users/${userId}/transactions/`;
@@ -60,10 +72,45 @@ class S3TransactionService {
 
       return item;
     } catch(e) {
+      this.throwError(`Failed to find transaction userId=${userId},transactionId=${transactionId} `, e);
+    }
+
+  }
+
+  async merge(userId, transactionId, input) {
+    // FIXME - Eventually consistent!
+    try {
+      const current = await find(userId, transactionId);
+
+      let updated = {
+        ...current,
+        ...input,
+      };
+
+      await this.update(userId, transactionId, updated);
+    } catch(e) {
       logger.error(e);
       throw e;
     }
+  }
 
+  async update(userId, transactionId, input) {
+    // FIXME - Eventually consistent!
+    //
+    try {
+      let Prefix = `users/${userId}/transactions/`;
+
+      let Key = `${Prefix}${transactionId}/status.json`;
+
+      await this.s3.putObject({
+        Bucket: config.awsBucket,
+        Key,
+        Body: JSON.stringify(input),
+      }).promise();
+    } catch(e) {
+      logger.error(e);
+      throw e;
+    }
   }
 
   async create(userId) {
@@ -84,6 +131,8 @@ class S3TransactionService {
         throw Error("InvalidStateException: no url created");
       }
 
+
+      // TODO use update
       const rsp = await this.s3.putObject({
         Bucket: config.awsBucket,
         Key: `${transactionPrefix}/status.json`,
