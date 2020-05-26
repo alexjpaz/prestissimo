@@ -2,7 +2,7 @@ const config = require('config');
 
 const { logger } = require('./logger');
 
-const AWS = require('./AWS');
+const AWS = require('./aws');
 
 class S3TransactionService {
   constructor(props = S3TransactionService.defaultProps()) {
