@@ -1,7 +1,9 @@
 const superagent = require('superagent');
 const supertest = require('supertest');
 
-let request = supertest(process.env.BASE_URL || "http://localhost:3000/dev");
+let baseUrl = process.env.BASE_URL || "http://localhost:3000/dev";
+
+let request = supertest(baseUrl);
 
 const getAccessToken = async () => {
   try {
@@ -20,7 +22,9 @@ const getAccessToken = async () => {
   }
 };
 
+
 module.exports = {
+  baseUrl,
   getAccessToken,
   request,
 };

@@ -5,15 +5,16 @@ const {
   getAccessToken,
 } = require('./common');
 
-beforeEach(async () => {
-  token = await getAccessToken();
-});
+describe('ping', () => {
+  beforeEach(async () => {
+    token = await getAccessToken();
+  });
 
-it('root', async () => {
-  await request.get('/')
-    .set("Authorization", `Bearer ${token}`)
-    .expect(200, /prestissimo/)
-  ;
+  it('root', async () => {
+    await request.get('/')
+      .set("Authorization", `Bearer ${token}`)
+      .expect(200, /prestissimo/)
+    ;
+  });
 });
-
 

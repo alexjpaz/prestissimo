@@ -6,11 +6,13 @@ const {
   getAccessToken,
 } = require('./common');
 
-beforeEach(async () => {
-  token = await getAccessToken();
-});
-
 describe('status', () => {
+
+  beforeEach(async () => {
+    token = await getAccessToken();
+  });
+
+
   it('OK', async () => {
     await request.get('/api/status')
       .set("Authorization", `Bearer ${token}`)
