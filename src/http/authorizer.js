@@ -1,4 +1,4 @@
-const request = require('superagent');
+const axios = require('axios');
 
 const { JWT, JWKS } = require('jose');
 
@@ -65,9 +65,9 @@ const Authorizer = (props = config.authorizer) => {
 
     if(jwksUri.startsWith('http://') || jwksUri.startsWith('https://')) {
       try {
-        let rsp = await request.get(jwksUri);
+        let rsp = await axios.get(jwksUri);
 
-        jwks = rsp.body;
+        jwks = rsp.data;
       } catch(e) {
         logger.error("Failed to get signing key", e);
         throw e;
