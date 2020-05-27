@@ -1,6 +1,19 @@
 version: 2.1
 orbs:
   node: circleci/node@1.1.6
+commands:
+  deploy:
+    description: "deploy"
+    parameters:
+      stage:
+        type: string
+    steps:
+      - run:
+          name: "deploy << parameters.stage >>"
+          command: ./scripts/serverless-deploy << parameters.stage >>
+          environment:
+            NODE_APP_INSTANCE: deployed
+
 jobs:
   build-and-test:
     docker:
@@ -36,8 +49,11 @@ jobs:
           steps:
             - run: echo 'export PATH=./opt/:$PATH' >> $BASH_ENV
             - run: npm run build
-            - run: ./scripts/serverless-deploy dev
-            - run: ./scripts/serverless-deploy production
+            - deploy:
+                stage: dev
+            - deploy:
+                stage: production
+
   deploy_branch:
     docker:
       - image: circleci/node:13
@@ -50,11 +66,8 @@ jobs:
             - run: echo 'export PATH=./opt/:$PATH' >> $BASH_ENV
             - run: npm install
             - run: npm run build
-            - run:
-                name: "deploy pr"
-                command: ./scripts/serverless-deploy pr-${CIRCLE_PULL_REQUEST##*/}
-                environment:
-                  NODE_APP_INSTANCE: deployed
+            - deploy:
+                stage: "pr-${CIRCLE_PULL_REQUEST##*/}"
 
 workflows:
     build-and-test:
