@@ -6,6 +6,7 @@ const superagent = require('superagent');
 const {
   request,
   getAccessToken,
+  aSecond,
 } = require('./common');
 
 describe('transactions', () => {
@@ -15,33 +16,79 @@ describe('transactions', () => {
     token = await getAccessToken();
   });
 
-  it('upload a test file using a created transaction', async () => {
-    let rsp;
+  describe('create', () => {
+    let transaction;
 
-    rsp = await request.put('/api/transactions')
-      .set("Authorization", `Bearer ${token}`)
-      .expect(200)
-    ;
+    beforeEach(async () => {
+      if(transaction) return;
 
-    let { transactionId } = rsp.body.data;
-    const { url } = rsp.body.data.upload;
+      let rsp;
 
-    let data = rsp.body;
+      rsp = await request.put('/api/transactions')
+        .set("Authorization", `Bearer ${token}`)
+        .expect(200)
+      ;
 
-    expect(url).to.include('x-amz-security-token');
+      transaction = rsp.body.data;
+    });
 
-    const buffer = Buffer.from("test");
+    it('transactionId', () => {
+      let { transactionId } = transaction;
 
-    const req = await superagent.put(url)
-      .send(buffer);
+      expect(transactionId).to.be.a("String");
 
-    // TODO - Assert that the manifest was accepted
-    rsp = await request.get(`/api/transactions/${transactionId}`)
-      .set("Authorization", `Bearer ${token}`)
-      .expect(200)
-    ;
+    });
 
-    // TODO - Should be ACCEPTED
-    expect(rsp.body.data.item.status).to.eql("CREATED");
-  })
+    it('url', () => {
+      let { url } = transaction.upload;
+      expect(url).to.include('x-amz-security-token');
+    });
+
+  });
+
+  describe('upload', () => {
+    it('upload a test file using a created transaction', async () => {
+      let rsp;
+
+      rsp = await request.put('/api/transactions')
+        .set("Authorization", `Bearer ${token}`)
+        .expect(200)
+      ;
+
+      let { transactionId } = rsp.body.data;
+      console.log(rsp.body.data);
+      const { url } = rsp.body.data.upload;
+
+      let data = rsp.body;
+
+      expect(url).to.include('x-amz-security-token');
+
+      const buffer = Buffer.from("test");
+
+      try {
+        await superagent.put(url)
+          .send(buffer);
+      } catch(e) {
+        throw new Error("Failed to upload file: " + e.message);
+      }
+
+      await aSecond(1000);
+
+      for(let retries=0; retries<10; retries++) {
+        // TODO - Assert that the manifest was accepted
+        try {
+          rsp = await request.get(`/api/transactions/${transactionId}`)
+            .set("Authorization", `Bearer ${token}`)
+            .expect(200)
+          ;
+
+          // TODO - Should be ACCEPTED
+          expect(rsp.body.data.item.status).to.eql("CREATED");
+          break;
+        } catch(e) {
+          await aSecond();
+        }
+      }
+    })
+  });
 });

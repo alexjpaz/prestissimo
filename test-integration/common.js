@@ -9,10 +9,10 @@ let baseUrl = process.env.BASE_URL || "http://localhost:3000/local";
 
 let request = supertest(baseUrl);
 
+const aSecond = (t = 1000) => new Promise(r => setTimeout(r, t));
 
 const getAccessToken = async () => {
-  // TODO - break out to a function
-  if(config.authorizer.jwksUri.startsWith("file://")) {
+  if(config && config.authorizer && config.authorizer.jwksUri.startsWith("file://")) {
     try {
       let path = config.authorizer.jwksUri.replace('file://','');
       const buffer = await fs.readFile(path);
@@ -58,4 +58,5 @@ module.exports = {
   baseUrl,
   getAccessToken,
   request,
+  aSecond,
 };
