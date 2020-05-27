@@ -4,6 +4,14 @@ const stream = require('stream');
 
 const { logger } = require('./logger');
 
+if(process.env.LAMBDA_TASK_ROOT) {
+  const binPath = `${process.env.LAMBDA_TASK_ROOT || './'}/opt`;
+
+  ffmpeg.setFfmpegPath(binPath);
+  ffmpeg.setFfprobePath(binPath);
+  ffmpeg.setFlvtoolPath(binPath);
+}
+
 /**
  * Run an ffmpeg command in an async/await manner
  * @see https://github.com/fluent-ffmpeg/node-fluent-ffmpeg/issues/710

@@ -1,10 +1,3 @@
-if(process.env.LAMBDA_TASK_ROOT) {
-  // FIXME - Hacky!
-  process.env.PATH = `${process.env.LAMBDA_TASK_ROOT || './'}/opt`;
-
-  console.info("PATH=${process.env.PATH}");
-}
-
 const serverless = require('serverless-http');
 
 const Router = require('./router');
