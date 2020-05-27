@@ -74,11 +74,7 @@ const Status = (s3 = new AWS.S3()) => {
     }
   },{
     name: "ffmpeg",
-    check: () => {
-      return "Not implemented";
-      //throw new Error("Not implemented");
-    },
-   //check: ffmpeg.statusCheck,
+    check: ffmpeg.statusCheck,
   }];
 
   app.get('/status', async function (req, res) {
