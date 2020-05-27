@@ -8,6 +8,9 @@ commands:
       stage:
         type: string
     steps:
+      - restore_cache:
+          keys:
+            - asset-cache-v1-{{ arch }}-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
       - run:
           name: "deploy << parameters.stage >>"
           command: ./scripts/serverless-deploy << parameters.stage >>
@@ -38,6 +41,11 @@ jobs:
             - run: npm run build:storybook
             - run: npm test
             - run: npm pack
+            - save_cache:
+                key: asset-cache-v1-{{ arch }}-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
+                paths:
+                  - public
+                  - opt
   deploy:
     docker:
       - image: circleci/node:13
