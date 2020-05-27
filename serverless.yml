@@ -3,10 +3,13 @@ service: prestissimo
 provider:
   name: aws
   runtime: nodejs12.x
-  stage: ${opt:stage, 'dev'}
+  stage: ${opt:stage, 'local'}
   deploymentBucket:
     name: shared-private-bucket.alexjpaz.com
   environment:
+    GIT_SHA: ${env.CIRCLE_SHA1, 'UNKNOWN'}
+    NODE_ENV: ${env:NODE_ENV, 'development'}
+    NODE_APP_INSTANCE: ${env:NODE_APP_INSTANCE}
     awsBucket: "${self:custom.bucketName}"
 
   s3:
@@ -27,9 +30,15 @@ provider:
      Action:
        - "s3:*"
      Resource: "arn:aws:s3:::${self:custom.bucketName}/*"
+   - Effect: "Allow"
+     Action:
+       - "s3:*"
+     Resource: "arn:aws:s3:::${self:custom.bucketName}"
+
+
 
 custom:
-  bucketName: ${self:service}-${self:provider.stage}
+  bucketName: ${self:service}.${self:provider.stage}
 
 plugins:
   - serverless-offline
@@ -48,6 +57,11 @@ functions:
           path: "/api/{proxy+}"
           method: any
           authorizer: authorizer
+      - http:
+          path: "/restricted/{proxy+}"
+          method: any
+          authorizer: authorizer
+
   authorizer:
     handler: src/http/index.authorizer
   convert:
@@ -57,4 +71,4 @@ functions:
           bucket: stagingBucket
           event: s3:ObjectCreated:*
           rules:
-            - prefix: uploads/raw/
+            - prefix: inbox/

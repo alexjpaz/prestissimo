@@ -7,5 +7,4 @@ import { UploadForm } from './UploadForm';
 it('renders', () => {
   const { getByTestId } = render(<UploadForm />);
   expect(getByTestId('UploadForm')).toBeVisible();
-  expect(getByTestId('audio')).toBeVisible();
 });

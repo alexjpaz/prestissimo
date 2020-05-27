@@ -1,6 +1,8 @@
 const config = require('config');
 
-const { spawn } = require('child_process');
+const stream = require('stream');
+
+const ffmpeg = require('../utils/ffmpeg');
 
 const { logger } = require('../utils/logger');
 
@@ -9,114 +11,197 @@ const createTempFile = require('../utils/createTempFile');
 
 const s3 = new AWS.S3();
 
-const cacheObjectToFilesystem = async (inputRecord) => {
-  const tempFile = await createTempFile();
+const { TransactionService } = require('../utils/TransactionService');
+// TODO
+let transactionService = TransactionService.standard();
 
-  logger.info("Caching object", inputRecord.s3.bucket.name, inputRecord.s3.object.key);
-
+const getManifest = async (Record) => {
   const rsp = await s3.getObject({
-    Bucket: inputRecord.s3.bucket.name,
-    Key: inputRecord.s3.object.key,
+    Bucket: Record.s3.bucket.name,
+    Key: Record.s3.object.key,
   }).promise();
 
-  await tempFile.write(rsp.Body);
+  let manifest = JSON.parse(rsp.Body);
 
-  return tempFile;
+  return manifest;
 };
 
-const ffmpeg = async (inputFile, outputFile, args = []) => {
-  const ffmpegArgs = [
-    '-y',
-    '-i', inputFile.path,
-    outputFile.path,
-    ...args
-  ];
+const convertAndUpload = async (item, context) => {
+  let results = {};
 
-  logger.info('Spawning ffmpeg with args', args.join(' '));
-
-  const child = spawn('ffmpeg', ffmpegArgs);
-
-  let data = ""
-
-  for await (const chunk of child.stdout) {
-    data += chunk;
-  }
-
-  let error = "";
-  for await (const chunk of child.stderr) {
-    error += chunk;
-  }
-
-  const exitCode = await new Promise( (resolve, reject) => {
-    child.on('close', resolve);
-  });
-
-  if(exitCode !== 0) {
-    logger.warn("ffmpeg exited with non-zero status", data, error);
-  }
-
-  return {
-    data,
-    exitCode,
-    error,
-  }
-
-};
-
-const convertAndUpload = async (Record) => {
-  const inputFile = await cacheObjectToFilesystem(Record);
-
-  // FIXME
-  const formats = [
-    "out.wav",
-    "out.mkv",
-  ];
+  results.targets = [];
 
   try {
-    logger.info('Converting record');
+    logger.info({ context }, 'Converting item',);
 
-    const tasks = formats.map(async (format) => {
-      const outputFile = await createTempFile(format); // TODO
+    const tasks = item.targets.map(async (target) => {
+      let { format } = target;
 
       try {
-        const rsp = await ffmpeg(inputFile, outputFile);
+        let { dataUrl } = item.file.data;
 
-        if(rsp.exitCode !== 0) {
-          throw new Error("Failed to convert object: ExitCode=" + rsp.exitCode);
-        }
+        let base64Data = dataUrl.slice(dataUrl.indexOf(',')+1);
 
-        logger.log('Uploading converted object');
+        let inputBuffer = Buffer.from(base64Data, 'base64');
+
+        let inputStream = new stream.Readable();
+        inputStream.push(inputBuffer);
+        inputStream.push(null);
+
+        let buffers = [];
+
+        // TODO read metadat using ffprob
+        // ffmpeg.ffprobe('/path/to/file.avi', function(err, metadata) {
+        // console.dir(metadata);
+        // });
+
+        let outputBuffer ;
+
+        let outputStream = new stream.Writable({
+          write(chunk, env, next) {
+            buffers.push(chunk);
+            next();
+          },
+          final(cb) {
+            outputBuffer = Buffer.concat(buffers);
+            cb();
+          }
+        });
+
+        const command = ffmpeg(inputStream)
+          .format(format)
+          .output(outputStream);
+
+        await ffmpeg.runAsync(command);
+
+        logger.log({ length: outputBuffer.length },
+          'Uploading converted object');
+
+        let Key = [
+          'conversions',
+          'users',
+          item.userId,
+          'transactions',
+          item.transactionId,
+          format,
+        ].join('/');
 
         await s3.putObject({
           Bucket: config.awsBucket,
-          Key: `test/${Record.s3.object.key}/${format}`,
-          ContentType: 'video/mkv',
-          Body: await outputFile.read(),
+          Key,
+          ContentType: 'audio/x-audioish',
+          Metadata: {
+            format,
+          },
+          Body: outputBuffer,
         }).promise();
 
+        results.targets.push({
+          format,
+          key: Key,
+        });
       } finally {
-        await outputFile.cleanup();
+        // Cleanuop
       }
     });
 
     await Promise.all(tasks);
 
+    return results;
+
   } catch(e) {
     throw e;
   } finally {
-    await inputFile.cleanup();
+    // Cleanup
   }
 
   logger.log('Sucessfully converted and uploaded object');
 };
 
-module.exports.convert = async (event, context) => {
-  for(let Record of event.Records) {
-    try {
-      await convertAndUpload(Record);
-    } catch(e) {
-      logger.error(e);
-      throw e;
+const processRecord = async (Record, context) => {
+  try {
+    const manifest = await getManifest(Record, context);
+
+    currentStatus = await transactionService.find(
+      manifest.userId,
+      manifest.transactionId,
+    );
+
+    currentStatus.status = "PROCESSING";
+
+    await transactionService.update(
+      manifest.userId,
+      manifest.transactionId,
+      currentStatus,
+    );
+
+    if(!manifest.items || manifest.items.length === 0) {
+      logger.warn("Unable to process manifest. Deleting");
+
+      // TODO - Move to InboxService
+      const rsp = await s3.deleteObject({
+        Bucket: Record.s3.bucket.name,
+        Key: Record.s3.object.key,
+      }).promise();
+
+      currentStatus.status = "ERROR";
+
+      await transactionService.update(
+        manifest.userId,
+        manifest.transactionId,
+        currentStatus,
+      );
+
+      return;
     }
+
+    // FIXME - iterate all items
+    // Maybe invoke other lambdas?
+    const item = manifest.items[0];
+
+    // FIXME
+    item.userId = manifest.userId;
+    item.transactionId = manifest.transactionId;
+
+    const results = await convertAndUpload(item, context);
+
+    currentStatus.status = "SUCCESS";
+    currentStatus.results = results;
+
+    await transactionService.update(
+      manifest.userId,
+      manifest.transactionId,
+      currentStatus,
+    );
+
+    // TODO - Move to InboxService
+    const rsp = await s3.deleteObject({
+      Bucket: Record.s3.bucket.name,
+      Key: Record.s3.object.key,
+    }).promise();
+
+  } catch(e) {
+    throw e;
   }
+
+};
+
+module.exports.convert = async (event, context) => {
+  const promises = [];
+
+  for(let Record of event.Records) {
+    promises.push(processRecord(Record, context));
+  }
+
+  try {
+    await Promise.all(promises);
+  } catch(e) {
+    logger.error(e);
+    throw e;
+  }
+
+  return {
+    Records: event.Records,
+    status: "OK",
+  };
 };

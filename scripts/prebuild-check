@@ -1,0 +1,23 @@
+#!/bin/bash
+set -o pipefail
+
+RESULTS=$(git grep -l '@wip' ./src)
+if [[ $RESULTS ]]; then
+    echo "Error! Found @wip tests"
+    echo "${RESULTS}"
+    exit 1;
+fi
+
+RESULTS=$(git grep -l '@wip' ./ui)
+if [[ $RESULTS ]]; then
+    echo "Error! Found @wip tests"
+    echo "${RESULTS}"
+    exit 2;
+fi
+
+RESULTS=$(git grep -l 'class=' ./ui/components/)
+if [[ $RESULTS ]]; then
+    echo "Error! Found React components with `class=`"
+    echo "${RESULTS}"
+    exit 3;
+fi

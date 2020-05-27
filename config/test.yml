@@ -1,5 +1,9 @@
 ---
+authorizer:
+  audience: "http://fake.local"
+  issuer: "http://fake.local"
+  jwksUri: "file://./test/very_much_not_secure/jwks.json"
 awsEndpoint: http://localhost:4566
-awsBucket: 'test-bucket.localhost'
+awsBucket: 'prestissimo.local'
 logger:
   level: silent
