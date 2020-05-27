@@ -59,11 +59,6 @@ const Status = (s3 = new AWS.S3()) => {
   const app = express();
 
   const checks = [{
-    name: "env",
-    check: async () => {
-      return process.env;
-    }
-  },{
     name: "config",
     check: async () => {
       return config
