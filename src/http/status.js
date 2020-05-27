@@ -2,6 +2,7 @@ const express = require('express');
 
 const config = require('config');
 
+const { logger } = require('../utils/logger');
 const AWS = require('../utils/aws');
 const ffmpeg = require('../utils/ffmpeg');
 
@@ -93,7 +94,11 @@ const Status = (s3 = new AWS.S3()) => {
       };
     }
 
+    logger.info("performing checks");
+
     const results = await performChecks(checks, filter);
+
+    logger.info({ results }, "check results");
 
     let status = results.reduce((p, c) => {
       if(c.status !== 'OK') {
