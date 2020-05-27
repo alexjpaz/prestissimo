@@ -3,6 +3,7 @@ const express = require('express');
 const config = require('config');
 
 const AWS = require('../utils/aws');
+const ffmpeg = require('../utils/ffmpeg');
 
 const CHECK_TIMEOUT = 4500;
 const FILTER_INCLUDE_ALL = i => i;
@@ -69,7 +70,10 @@ const Status = (s3 = new AWS.S3()) => {
         Bucket: config.awsBucket
       }).promise();
     }
-  },];
+  },{
+    name: "ffmpeg",
+    check: ffmpeg.statusCheck,
+  }];
 
   app.get('/status', async function (req, res) {
     let filter = FILTER_INCLUDE_ALL;

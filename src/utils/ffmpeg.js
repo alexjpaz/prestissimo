@@ -27,6 +27,28 @@ ffmpeg.runAsync = (command) => {
   });
 };
 
+ffmpeg.statusCheck = async () => {
+  const { promisify } = require('util');
+
+  let result = {
+  };
+
+  let fns = [
+    'getAvailableFormats',
+    'getAvailableCodecs',
+    'getAvailableEncoders',
+    'getAvailableFilters',
+  ].map(fn => promisify(ffmpeg[fn]));
+
+  let promises = fns.map(fn => fn());
+
+  result.status = "OK";
+
+  // TODO - list available formats
+
+  return result;
+};
+
 class BufferInputStream extends stream.Readable {
   constructor(props) {
     super(props);
