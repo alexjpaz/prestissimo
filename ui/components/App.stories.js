@@ -65,18 +65,42 @@ export const withLocalServer = () => {
 
         let { upload } = rsp.data;
 
+        manifest.userId = rsp.data.userId;
+        manifest.transactionId = rsp.data.transactionId;
+
+        action("manifest+transaction")(manifest);
+
         await fetch(upload.url, {
           method: upload.httpMethod,
           body: JSON.stringify(manifest),
         });
 
         // FIXME - Bad
+        // Exponential backoff
+        let MAX_RETRIES = 10;
+        let MAX_TIMEOUT = 10000;
+        let timeout;
+        let retries = 0;
         (async function check() {
           let transactionStatus = await fetch(`${endpoint}/api/transactions/${rsp.data.transactionId}`)
             .then(r => r.json());
 
-          if(transactionStatus.data.item.status !== 'DONE') {
-            setTimeout(check, 2000);
+          let terminalStates = [
+            'SUCCESS',
+            'ERROR',
+          ];
+
+          if(retries >= MAX_RETRIES) {
+            throw new Error("Retry limit reached!");
+          }
+
+          if(!terminalStates.includes(transactionStatus.data.item.status)) {
+            retries++;
+            timeout = Math.min(MAX_TIMEOUT, Math.pow(2, retries) * 2000);
+
+            console.log(timeout);
+
+            setTimeout(check, timeout);
           }
         })();
       } catch(e) {
