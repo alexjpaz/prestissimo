@@ -4,12 +4,11 @@ const stream = require('stream');
 
 const { logger } = require('./logger');
 
+/**
+ * This hack is to allow the execution of both ffmpeg locally and on lambda
+ */
 if(process.env.LAMBDA_TASK_ROOT) {
-  const binPath = `${process.env.LAMBDA_TASK_ROOT || './'}/opt`;
-
-  ffmpeg.setFfmpegPath(binPath);
-  ffmpeg.setFfprobePath(binPath);
-  ffmpeg.setFlvtoolPath(binPath);
+  process.env.PATH += `:${process.env.LAMBDA_TASK_ROOT || './'}/opt`;
 }
 
 /**
