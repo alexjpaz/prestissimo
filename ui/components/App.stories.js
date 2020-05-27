@@ -27,7 +27,7 @@ export const withMockServer = () => {
 };
 
 export const withLocalServer = () => {
-  const endpoint = text("endpoint", "http://localhost:3000/dev");
+  const endpoint = text("endpoint", "http://localhost:3000/local");
 
   button("process inbox", async () => {
     action('processing-inbox')("started");

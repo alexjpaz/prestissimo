@@ -71,7 +71,7 @@ describe('convert', () => {
           {
             s3: {
               bucket: {
-                name: "test-bucket.localhost",
+                name: config.awsBucket,
               },
               object: {
                 key: transaction.upload.manifestKey,

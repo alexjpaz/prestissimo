@@ -48,7 +48,7 @@ const Debug = () => {
       ;
 
       const response = await lambda.invoke({
-        FunctionName: "prestissimo-dev-convert",
+        FunctionName: "prestissimo-local-convert",
         InvocationType: "RequestResponse",
         Payload: JSON.stringify({
           Records

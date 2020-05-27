@@ -1,7 +1,7 @@
 const superagent = require('superagent');
 const supertest = require('supertest');
 
-let baseUrl = process.env.BASE_URL || "http://localhost:3000/dev";
+let baseUrl = process.env.BASE_URL || "http://localhost:3000/local";
 
 let request = supertest(baseUrl);
 
