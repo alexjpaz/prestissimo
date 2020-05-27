@@ -18,10 +18,10 @@ describe('status', () => {
       .set("Authorization", `Bearer ${token}`)
       .expect(200)
       .expect((rsp) => {
+        console.log(rsp.text);
         expect(rsp.body.status).to.eql("OK");
 
         // TODO
-        console.log(rsp.text);
       });
     ;
   });
