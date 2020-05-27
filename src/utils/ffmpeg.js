@@ -28,25 +28,29 @@ ffmpeg.runAsync = (command) => {
 };
 
 ffmpeg.statusCheck = async () => {
-  const { promisify } = require('util');
+  try {
+    const { promisify } = require('util');
 
-  let result = {
-  };
+    let result = {
+    };
 
-  let fns = [
-    'getAvailableFormats',
-    'getAvailableCodecs',
-    'getAvailableEncoders',
-    'getAvailableFilters',
-  ].map(fn => promisify(ffmpeg[fn]));
+    let fns = [
+      'getAvailableFormats',
+      'getAvailableCodecs',
+      'getAvailableEncoders',
+      'getAvailableFilters',
+    ].map(fn => promisify(ffmpeg[fn]));
 
-  let promises = fns.map(fn => fn());
+    let promises = fns.map(fn => fn());
 
-  result.status = "OK";
+    result.status = "OK";
 
-  // TODO - list available formats
+    // TODO - list available formats
 
-  return result;
+    return result;
+  } catch(e) {
+    throw e;
+  }
 };
 
 class BufferInputStream extends stream.Readable {
