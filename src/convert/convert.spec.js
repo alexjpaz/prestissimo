@@ -13,7 +13,7 @@ const generateId = require('../utils/generateId');
 
 const { TransactionService } = require('../utils/TransactionService');
 
-describe('@wip convert', () => {
+describe('convert', () => {
   let transactionService = TransactionService.standard();
 
   describe('manifest', () => {

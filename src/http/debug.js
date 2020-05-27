@@ -33,7 +33,6 @@ const Debug = () => {
 
       console.log("Processing inbox", uploads.Contents);
 
-
       let Records = uploads.Contents
         .map(c => c.Key)
         .map(key => ({
