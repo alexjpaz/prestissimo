@@ -19,7 +19,12 @@ describe('status', () => {
       .expect(200)
       .expect((rsp) => {
         expect(rsp.body.status).to.eql("OK");
+
+        // TODO
+        console.log(rsp.text);
       });
     ;
   });
+
+
 });
