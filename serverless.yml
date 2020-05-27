@@ -31,8 +31,7 @@ provider:
      Resource: "arn:aws:s3:::${self:custom.bucketName}/*"
 
 custom:
-  bucketName: 'test-bucket.localhost'
-  #bucketName: ${self:service}-${self:provider.stage}
+  bucketName: ${self:service}-${self:provider.stage}
 
 plugins:
   - serverless-offline
