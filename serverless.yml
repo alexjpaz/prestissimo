@@ -30,6 +30,12 @@ provider:
      Action:
        - "s3:*"
      Resource: "arn:aws:s3:::${self:custom.bucketName}/*"
+   - Effect: "Allow"
+     Action:
+       - "s3:*"
+     Resource: "arn:aws:s3:::${self:custom.bucketName}"
+
+
 
 custom:
   bucketName: ${self:service}.${self:provider.stage}
