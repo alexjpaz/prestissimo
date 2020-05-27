@@ -47,8 +47,6 @@ jobs:
       - checkout
       - node/with-cache:
           steps:
-            - run: echo 'export PATH=./opt/:$PATH' >> $BASH_ENV
-            - run: npm run build
             - deploy:
                 stage: dev
             - deploy:
@@ -63,9 +61,6 @@ jobs:
       - checkout
       - node/with-cache:
           steps:
-            - run: echo 'export PATH=./opt/:$PATH' >> $BASH_ENV
-            - run: npm install
-            - run: npm run build
             - deploy:
                 stage: "pr-${CIRCLE_PULL_REQUEST##*/}"
 
