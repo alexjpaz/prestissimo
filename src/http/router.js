@@ -31,6 +31,13 @@ const Router = (props = defaultProps()) => {
 
   app.use(express.static('public'))
 
+  app.get('/ping', (req, res, next) => {
+    return res.send({
+      version: process.env.GIT_SHA,
+      timestamp: new Date().toISOString(),
+    });
+  });
+
   // FIXME
   app.use('/api', (req, res, next) => {
     req.user = {
