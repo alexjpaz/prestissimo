@@ -37,7 +37,7 @@ const performChecks = async (checks, filter = FILTER_INCLUDE_ALL) => {
             result
           });
         } catch(e) {
-          logger.error({ error: e }, "Check failed");
+          logger.error({ name: check.name, error: e }, "Check failed");
           results.push({
             ...check,
             status: "CRITICAL",
