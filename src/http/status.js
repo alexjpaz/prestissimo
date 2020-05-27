@@ -57,6 +57,11 @@ const Status = (s3 = new AWS.S3()) => {
   const app = express();
 
   const checks = [{
+    name: "env",
+    check: async () => {
+      return process.env;
+    }
+  },{
     name: "config",
     check: async () => {
       return config
@@ -72,7 +77,11 @@ const Status = (s3 = new AWS.S3()) => {
     }
   },{
     name: "ffmpeg",
-    check: ffmpeg.statusCheck,
+    check: () => {
+      return "Not implemented";
+      //throw new Error("Not implemented");
+    },
+   //check: ffmpeg.statusCheck,
   }];
 
   app.get('/status', async function (req, res) {
