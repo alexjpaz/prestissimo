@@ -135,6 +135,26 @@ const processRecord = async (Record, context) => {
       currentStatus,
     );
 
+    if(!manifest.items || manifest.items.length === 0) {
+      logger.warn("Unable to process manifest. Deleting");
+
+      // TODO - Move to InboxService
+      const rsp = await s3.deleteObject({
+        Bucket: Record.s3.bucket.name,
+        Key: Record.s3.object.key,
+      }).promise();
+
+      currentStatus.status = "ERROR";
+
+      await transactionService.update(
+        manifest.userId,
+        manifest.transactionId,
+        currentStatus,
+      );
+
+      return;
+    }
+
     // FIXME - iterate all items
     // Maybe invoke other lambdas?
     const item = manifest.items[0];
@@ -154,6 +174,7 @@ const processRecord = async (Record, context) => {
       currentStatus,
     );
 
+    // TODO - Move to InboxService
     const rsp = await s3.deleteObject({
       Bucket: Record.s3.bucket.name,
       Key: Record.s3.object.key,
