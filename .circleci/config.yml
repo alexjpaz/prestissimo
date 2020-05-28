@@ -27,7 +27,7 @@ jobs:
       - image: localstack/localstack
         environment:
           DEBUG: 1
-          SERVICES: s3,sqs
+          SERVICES: s3,sqs,dynamodb
     executor:
       name: node/default
     steps:
