@@ -47,4 +47,52 @@ describe('http/router', () => {
       ;
     });
   });
+
+  // SAMPLE REQUEST
+  /*
+
+{
+  accountId: 'offlineContext_accountId',
+  apiId: 'offlineContext_apiId',
+  authorizer: {
+    scope: 'test',
+    claims: {
+      scope: 'test',
+      sub: 'foo',
+      aud: 'http://fake.local',
+      iss: 'http://fake.local',
+      iat: 1590673164
+    },
+    principalId: 'foo'
+  },
+  domainName: 'offlineContext_domainName',
+  domainPrefix: 'offlineContext_domainPrefix',
+  extendedRequestId: 'ckaqtqczf0005w9q960tr9rp5',
+  httpMethod: 'GET',
+  identity: {
+    accessKey: null,
+    accountId: 'offlineContext_accountId',
+    apiKey: 'offlineContext_apiKey',
+    caller: 'offlineContext_caller',
+    cognitoAuthenticationProvider: 'offlineContext_cognitoAuthenticationProvider',
+    cognitoAuthenticationType: 'offlineContext_cognitoAuthenticationType',
+    cognitoIdentityId: 'offlineContext_cognitoIdentityId',
+    cognitoIdentityPoolId: 'offlineContext_cognitoIdentityPoolId',
+    principalOrgId: null,
+    sourceIp: '127.0.0.1',
+    user: 'offlineContext_user',
+    userAgent: 'node-superagent/3.8.3',
+    userArn: 'offlineContext_userArn'
+  },
+  path: '/local/api/{proxy*}',
+  protocol: 'HTTP/1.1',
+  requestId: 'ckaqtqczf0006w9q909g7hmyq',
+  requestTime: '28/May/2020:09:39:24 -0400',
+  requestTimeEpoch: 1590673164601,
+  resourceId: 'offlineContext_resourceId',
+  resourcePath: '/api/status',
+  stage: 'local'
+}
+
+*/
 });

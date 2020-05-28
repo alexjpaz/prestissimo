@@ -13,6 +13,7 @@ const fs = require('fs').promises;
 const { Status } = require('./status');
 const { Transactions } = require('./transactions');
 const { Debug } = require('./debug');
+const { User } = require('./user');
 
 const defaultProps = () => ({
   s3: new AWS.S3(),
@@ -38,14 +39,7 @@ const Router = (props = defaultProps()) => {
     });
   });
 
-  // FIXME
-  app.use('/api', (req, res, next) => {
-    req.user = {
-      userId: "FAKE_LOCAL",
-    };
-
-    next();
-  });
+  app.use('/api', User());
 
   app.use('/api', [
     Status(),
