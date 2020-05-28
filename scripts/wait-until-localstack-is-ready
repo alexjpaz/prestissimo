@@ -17,7 +17,7 @@ AWS.config.update({
 const aSecond = (t = 1000) => new Promise((r) => setTimeout(r, t));
 
 const waitFor = async (fn) => {
-    let expiresAt = Date.now() + (1000 * 60);
+    let expiresAt = Date.now() + (1000 * 60 * 3);
 
     let ready;
 
