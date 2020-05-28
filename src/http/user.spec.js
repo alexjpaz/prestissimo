@@ -4,7 +4,7 @@ const supertest = require('supertest');
 
 const { User } = require('./user');
 
-describe('@wip User', () => {
+describe('User', () => {
   let request;
 
   beforeEach(() => {
