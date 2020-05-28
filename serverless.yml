@@ -76,29 +76,30 @@ functions:
             - prefix: inbox/
 
 resources:
- DynamoTable:
-    Type: AWS::DynamoDB::Table
-    Properties:
-      TableName: ${self:custom.dynamoTableName}
-      AttributeDefinitions:
-        - AttributeName: Id
-          AttributeType: S
-        - AttributeName: Category
-          AttributeType: S
-        - AttributeName: ModificationTimestamp
-          AttributeType: S
-      KeySchema:
-        - AttributeName: Id
-          KeyType: HASH
-        - AttributeName: Category
-          KeyType: RANGE
-      LocalSecondaryIndexes:
-        - IndexName: ModificationTimestampIndex
-          KeySchema:
-            - AttributeName: Id
-              KeyType: HASH
-            - AttributeName: ModificationTimestamp
-              KeyType: RANGE
-          Projection:
-            ProjectionType: ALL
-      BillingMode: PAY_PER_REQUEST
+  Resources:
+    DynamoTable:
+       Type: AWS::DynamoDB::Table
+       Properties:
+         TableName: ${self:custom.dynamoTableName}
+         AttributeDefinitions:
+           - AttributeName: Id
+             AttributeType: S
+           - AttributeName: Category
+             AttributeType: S
+           - AttributeName: ModificationTimestamp
+             AttributeType: S
+         KeySchema:
+           - AttributeName: Id
+             KeyType: HASH
+           - AttributeName: Category
+             KeyType: RANGE
+         LocalSecondaryIndexes:
+           - IndexName: ModificationTimestampIndex
+             KeySchema:
+               - AttributeName: Id
+                 KeyType: HASH
+               - AttributeName: ModificationTimestamp
+                 KeyType: RANGE
+             Projection:
+               ProjectionType: ALL
+         BillingMode: PAY_PER_REQUEST

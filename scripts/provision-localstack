@@ -27,7 +27,7 @@ const provisionDynamoDB = async () => {
     const serverlessYamlFile = await fs.readFile('./serverless.yml');
     const serverlessYamlDoc = yaml.safeLoad(serverlessYamlFile, 'utf8');
 
-    const Properties = serverlessYamlDoc.resources.DynamoTable.Properties;
+    const Properties = serverlessYamlDoc.resources.Resources.DynamoTable.Properties;
 
     Properties.TableName = config.dynamoTableName;
 
