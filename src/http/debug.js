@@ -6,6 +6,8 @@ const AWS = require('../utils/aws');
 
 const { logger } = require('../utils/logger');
 
+const { JWKS, JWT } = require('jose');
+
 const Debug = () => {
   if(process.env.NODE_ENV !== 'test') {
     return (req, res, next) => {
@@ -23,6 +25,38 @@ const Debug = () => {
   });
 
   const s3 = new AWS.S3();
+
+  app.get('/debug/tokens/user', async (req, res, next) => {
+    try {
+      let path = config.authorizer.jwksUri.replace('file://','');
+      const buffer = await fs.readFile(path);
+      jwks = JSON.parse(buffer.toString());
+      keyStore = JWKS.asKeyStore(jwks);
+      let key = keyStore.all()[0];
+
+      let token = JWT.sign(
+        {
+          name: 'test@test.com.com',
+          email: 'test@test.com.com',
+          nickname: 'test',
+          scope: 'test'
+        },
+        key,
+        {
+          subject: "fake|user123",
+          audience: config.authorizer.audience,
+          issuer: config.authorizer.issuer,
+        }
+      );
+
+      return res.send({
+        token,
+      });
+    } catch(e) {
+      next(e);
+    }
+  });
+
 
   app.get('/debug/process-inbox', async (req, res, next) => {
     try {
