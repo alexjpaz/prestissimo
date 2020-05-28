@@ -16,6 +16,7 @@ commands:
           command: ./scripts/serverless-deploy << parameters.stage >>
           environment:
             NODE_APP_INSTANCE: deployed
+            SLS_DEBUG: '*'
 
 jobs:
   build-and-test:
