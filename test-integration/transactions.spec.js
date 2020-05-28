@@ -56,7 +56,7 @@ describe('transactions', () => {
       ;
 
       let { transactionId } = rsp.body.data;
-      console.log(rsp.body.data);
+
       const { url } = rsp.body.data.upload;
 
       let data = rsp.body;
