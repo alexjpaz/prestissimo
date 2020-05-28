@@ -79,7 +79,7 @@ resources:
  DynamoTable:
     Type: AWS::DynamoDB::Table
     Properties:
-      TableName: ${self:custom.config.envDnsFqdn}
+      TableName: ${self:custom.config.dynamoTableName}
       AttributeDefinitions:
         - AttributeName: Id
           AttributeType: S

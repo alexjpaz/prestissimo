@@ -4,9 +4,45 @@ process.env.NODE_ENV = 'test';
 const logger = console;
 
 const config = require('config');
+
+const fs = require('fs').promises;
+
+const yaml = require('js-yaml');
+
 const AWS = require('../src/utils/aws');
 
-const provision = async () => {
+const provisionDynamoDB = async () => {
+    logger.info("Provisioning DynamoDB");
+    const dynamoDB = new AWS.DynamoDB();
+
+    try {
+        await dynamoDB.deleteTable({
+            TableName: config.dynamoTableName
+        }).promise();
+
+    } catch(e) {
+        //
+    };
+
+    const serverlessYamlFile = await fs.readFile('./serverless.yml');
+    const serverlessYamlDoc = yaml.safeLoad(serverlessYamlFile, 'utf8');
+
+    const Properties = serverlessYamlDoc.resources.DynamoTable.Properties;
+
+    Properties.TableName = config.dynamoTableName;
+
+    try {
+        await dynamoDB.createTable(Properties).promise();
+    } catch(e) {
+        throw e;
+    };
+
+
+    logger.info("Finished Provisioning DynamoDB");
+};
+
+const provisionS3 = async () => {
+    logger.info("Provisioning S3");
     const s3 = new AWS.S3();
 
     try {
@@ -24,15 +60,20 @@ const provision = async () => {
     }
 };
 
+const provision = async () => {
+    await provisionDynamoDB();
+    await provisionS3();
+};
+
 const main = async () => {
-  try {
-      logger.info("Provisioning localstack", AWS.config.endpoint);
-      await provision();
-      logger.info("Ready");
-  } catch(e) {
-      logger.error(e);
-      process.exit(1);
-  }
+    try {
+        logger.info("Provisioning localstack", AWS.config.endpoint);
+        await provision();
+        logger.info("Ready");
+    } catch(e) {
+        logger.error(e);
+        process.exit(1);
+    }
 };
 
 main();

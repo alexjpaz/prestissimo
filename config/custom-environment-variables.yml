@@ -1,4 +1,5 @@
 ---
+dynamoTableName: dynamoTableName
 awsBucket: awsBucket
 logger:
   appender: LOGGER_APPENDER
