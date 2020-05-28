@@ -11,6 +11,7 @@ provider:
     NODE_ENV: ${env:NODE_ENV, 'development'}
     NODE_APP_INSTANCE: ${env:NODE_APP_INSTANCE}
     awsBucket: "${self:custom.bucketName}"
+    dynamoTableName: "${self:custom.dynamoTableName}"
 
   s3:
     stagingBucket:
@@ -38,6 +39,7 @@ provider:
 
 
 custom:
+  dynamoTableName: ${self:service}.${self:provider.stage}
   bucketName: ${self:service}.${self:provider.stage}
 
 plugins:
@@ -72,3 +74,31 @@ functions:
           event: s3:ObjectCreated:*
           rules:
             - prefix: inbox/
+
+resources:
+ DynamoTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: ${self:custom.config.envDnsFqdn}
+      AttributeDefinitions:
+        - AttributeName: Id
+          AttributeType: S
+        - AttributeName: Category
+          AttributeType: S
+        - AttributeName: ModificationTimestamp
+          AttributeType: S
+      KeySchema:
+        - AttributeName: Id
+          KeyType: HASH
+        - AttributeName: Category
+          KeyType: RANGE
+      LocalSecondaryIndexes:
+        - IndexName: ModificationTimestampIndex
+          KeySchema:
+            - AttributeName: Id
+              KeyType: HASH
+            - AttributeName: ModificationTimestamp
+              KeyType: RANGE
+          Projection:
+            ProjectionType: ALL
+      BillingMode: PAY_PER_REQUEST
