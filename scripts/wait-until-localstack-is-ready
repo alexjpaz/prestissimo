@@ -30,7 +30,7 @@ const waitFor = async (fn) => {
             await fn();
             ready = true;
         } catch(e) {
-            logger.error(e.message);
+            logger.error(e);
             await aSecond();
         }
     }
