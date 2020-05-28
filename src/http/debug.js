@@ -4,6 +4,8 @@ const config = require('config');
 
 const AWS = require('../utils/aws');
 
+const fs = require('fs').promises;
+
 const { logger } = require('../utils/logger');
 
 const { JWKS, JWT } = require('jose');
@@ -26,7 +28,9 @@ const Debug = () => {
 
   const s3 = new AWS.S3();
 
-  app.get('/debug/tokens/user', async (req, res, next) => {
+  app.get('/debug/tokens', async (req, res, next) => {
+    let scope = req.query.scope || 'admin:test';
+
     try {
       let path = config.authorizer.jwksUri.replace('file://','');
       const buffer = await fs.readFile(path);
@@ -34,13 +38,17 @@ const Debug = () => {
       keyStore = JWKS.asKeyStore(jwks);
       let key = keyStore.all()[0];
 
+      let claims = {
+        sub: "fake|user123",
+        name: 'test@test.com.com',
+        email: 'test@test.com.com',
+        nickname: 'test',
+        scope,
+        permissions: scope.split(',')
+      };
+
       let token = JWT.sign(
-        {
-          name: 'test@test.com.com',
-          email: 'test@test.com.com',
-          nickname: 'test',
-          scope: 'test'
-        },
+        claims,
         key,
         {
           subject: "fake|user123",
@@ -50,6 +58,7 @@ const Debug = () => {
       );
 
       return res.send({
+        claims,
         token,
       });
     } catch(e) {
