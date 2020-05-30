@@ -6,13 +6,10 @@ export function Navbar() {
   const ctx = React.useContext(AppContext);
 
   return (
-    <nav className="navbar" role="navigation" aria-label="main navigation">
+    <nav className="navbar is-dark" role="navigation" aria-label="main navigation">
       <div className="navbar-brand">
-        <a className="navbar-item" href="/">
-            <span className="icon">
-              <i className='fas fa-music'> </i>
-            </span>
-            <span>prestissimo</span>
+        <a className="navbar-item is-size-4" href="/">
+          <Branding />
         </a>
 
         <a role="button" className="navbar-burger" aria-label="menu" aria-expanded="false">
