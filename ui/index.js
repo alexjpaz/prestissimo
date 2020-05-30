@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 
 const { logger } = require('./logger');
 
-import { App } from './components/App';
+import { DefaultApp } from './components/App';
 
 const title = 'React with Webpack and Babel';
 
@@ -16,7 +16,7 @@ if(loader) {
 let root = document.querySelector('#app');
 
 ReactDOM.render(
-  <App />,
+  <DefaultApp />,
   root
 );
 

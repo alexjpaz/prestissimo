@@ -1,28 +1,43 @@
 import React from 'react';
+import { MemoryRouter } from "react-router-dom"
 import { action } from '@storybook/addon-actions';
 import { withKnobs, button, text } from "@storybook/addon-knobs";
 
 import { App } from './App';
 
-import { AppContext } from './AppContext';
+import { AppContext, defaultContextValue } from './AppContext';
+import { Auth0Provider } from './login/Auth0Context';
 
 export default {
   title: App.name,
   decorators: [withKnobs]
 };
 
+export const withNoAuthentication = () => {
+  let value = {
+  };
+
+  return (
+    <MemoryRouter>
+      <AppContext.Provider value={value}>
+        <App />
+      </AppContext.Provider>
+    </MemoryRouter>
+  );
+};
+
 export const withMockServer = () => {
   let value = {
-    user: {
-      name: "Test User",
-    },
+    ...defaultContextValue,
     uploadTrack: action('uploadTrack')
   };
 
   return (
-    <AppContext.Provider value={value}>
-      <App />
-    </AppContext.Provider>
+    <MemoryRouter initialEntries={["/upload"]}>
+      <AppContext.Provider value={value}>
+        <App />
+      </AppContext.Provider>
+    </MemoryRouter>
   );
 };
 
@@ -111,8 +126,10 @@ export const withLocalServer = () => {
   };
 
   return (
-    <AppContext.Provider value={value}>
-      <App />
-    </AppContext.Provider>
+    <MemoryRouter initialEntries={["/upload"]}>
+      <AppContext.Provider value={value}>
+        <App />
+      </AppContext.Provider>
+    </MemoryRouter>
   );
 };

@@ -31,6 +31,7 @@
   },
   "homepage": "https://github.com/alexjpaz-incubator/prestissimo#readme",
   "devDependencies": {
+    "@auth0/auth0-spa-js": "^1.8.2",
     "@babel/core": "^7.9.6",
     "@babel/plugin-transform-runtime": "^7.9.6",
     "@babel/preset-env": "^7.9.6",
@@ -50,6 +51,7 @@
     "mocha": "^7.1.2",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
+    "react-router-dom": "^5.2.0",
     "serverless": "^1.70.0",
     "serverless-offline": "^6.1.5",
     "sinon": "^9.0.2",
