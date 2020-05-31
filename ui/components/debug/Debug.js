@@ -15,27 +15,22 @@ export function Debug({ api = PrestissimoApi.standard() }) {
     (function () {
       api.ping()
         .then(d => setData(d));
-      //fetch("http://localhost:3000/local/ping")
-        //.then((r) => r.json())
-        //.then((r) => setData(r));
     })();
   }, []);
 
   //TODO
   return (
     <Route path="/debug" exact>
-      <div data-test-id="App-debug" class>
+      <div data-test-id="App-debug">
         <section className="hero is-warning is-fullheight-with-navbar">
           <div className="hero-body">
             <div className="container has-text-centered">
               <p className="title is-size-1">
-                <h1>debug</h1>
+                debug
               </p>
-              <p className="subtitle">
-                <pre className="has-text-left">
-                  {JSON.stringify(data, null, 2)}
-                </pre>
-              </p>
+              <pre className="subtitle has-text-left">
+                {JSON.stringify(data, null, 2)}
+              </pre>
             </div>
           </div>
         </section>
