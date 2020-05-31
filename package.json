@@ -6,6 +6,7 @@
   "scripts": {
     "start": "serverless offline",
     "start:ui": "webpack-dev-server",
+    "prettier": "prettier",
     "storybook": "start-storybook -p 9009",
     "postinstall": "./scripts/download-dependencies.sh",
     "pretest": "./scripts/wait-until-localstack-is-ready && ./scripts/provision-localstack",
@@ -47,6 +48,7 @@
     "husky": "^4.2.5",
     "jest": "^26.0.1",
     "mocha": "^7.1.2",
+    "prettier": "2.0.5",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "serverless": "^1.70.0",
