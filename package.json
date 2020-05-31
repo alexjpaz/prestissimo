@@ -8,7 +8,7 @@
     "start:ui": "webpack-dev-server",
     "storybook": "start-storybook -p 9009",
     "postinstall": "./scripts/download-dependencies.sh",
-    "pretest": "./scripts/wait-until-localstack-is-ready && ./scripts/provision-localstack",
+    "pretest": "exit 55 && ./scripts/wait-until-localstack-is-ready && ./scripts/provision-localstack",
     "build": "npm run build:webpack",
     "build:webpack": "webpack -p",
     "build:storybook": "build-storybook",
