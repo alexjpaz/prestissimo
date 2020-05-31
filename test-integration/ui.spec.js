@@ -2,8 +2,11 @@ const { expect } = require('chai');
 
 const jsdom = require('jsdom');
 
+const { waitFor } = require('@testing-library/dom');
+
 const {
   baseUrl,
+  aSecond,
 } = require('./common');
 
 describe('@wip ui', () => {
@@ -19,6 +22,8 @@ describe('@wip ui', () => {
         runScripts: "dangerously",
         virtualConsole
       });
+
+      //virtualConsole.sendTo(console);
     });
 
     it('loads init html', async () => {
@@ -43,11 +48,13 @@ describe('@wip ui', () => {
     beforeEach(async () => {
       const virtualConsole = new jsdom.VirtualConsole();
 
-      dom = await jsdom.JSDOM.fromURL(`${baseUrl}/index.html#/debug`, {
+      dom = await jsdom.JSDOM.fromURL(`${baseUrl}/index.html?#/debug`, {
         resources: 'usable',
         runScripts: "dangerously",
         virtualConsole
       });
+
+      //virtualConsole.sendTo(console);
     });
 
     it('loads debug page', async () => {
@@ -57,7 +64,13 @@ describe('@wip ui', () => {
         });
       });
 
-      expect(dom.window.document.body.innerHTML).to.include('data-test-id="App-debug"');
+      expect(dom.window.document.body.innerHTML).to.include('data-test-id="App-root"');
+
+      await aSecond();
+
+      expect(dom.window.document.body.innerHTML).to.include('version');
+
+      // TODO assert current version
     });
   });
 

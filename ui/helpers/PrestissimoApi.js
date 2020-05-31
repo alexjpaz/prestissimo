@@ -18,6 +18,25 @@ export class PrestissimoApi {
     }
   }
 
+  async ping() {
+    try {
+      const rsp = await this.client.get('/ping');
+
+      return rsp.data;
+    } catch(e) {
+      logger.error(e.message);
+      throw e;
+    }
+  }
+
+  static standard() {
+    return new PrestissimoApi({
+      client: axios.create({
+        baseURL: "./" // TODO
+      })
+    })
+  }
+
   static standardClient() {
     return axios.create();
   }

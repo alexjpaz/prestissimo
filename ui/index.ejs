@@ -10,7 +10,9 @@
     <script>
         (function redirectToSlash() {
             if(!(location.href.endsWith("/") || location.href.endsWith("#"))) {
-                location.assign(location.href + "/#");
+                console.warn("HTML5 not enabled. Falling back to hash routing");
+                location.assign(location.href + "#");
+                //location.reload();
             }
         })();
     </script>

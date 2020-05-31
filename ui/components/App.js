@@ -6,6 +6,8 @@ import {
   Route,
 } from "react-router-dom"
 
+import { Debug } from './debug/Debug';
+
 import { LandingPage } from './LandingPage';
 import { Login } from './login/Login';
 
@@ -31,11 +33,7 @@ export function App() {
           <Navbar />
           <UploadForm onUpload={ctx.uploadTrack} />
         </Route>
-        <Route path="/debug" exact>
-          <div data-test-id='App-debug'>
-            <h1>debug</h1>
-          </div>
-        </Route>
+        <Debug />
       </Switch>
     </div>
   );
