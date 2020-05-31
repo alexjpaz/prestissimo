@@ -9,7 +9,7 @@ export function NavbarProfile() {
   console.log(ctx.user.photo);
 
   return (
-    <a class="navbar-item" href="#">
+    <a className="navbar-item" href="#">
       <span>{ctx.user.name} </span>
       <img src={ctx.user.photo} height='32' width='32' />
     </a>
