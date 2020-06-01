@@ -46,6 +46,26 @@ jobs:
                 paths:
                   - public
                   - opt
+  component-test:
+    docker:
+      - image: circleci/node:13
+        environment:
+          AWS_ACCESS_KEY_ID: localstack
+          AWS_SECRET_ACCESS_KEY: localstack
+      - image: localstack/localstack
+        environment:
+          DEBUG: 1
+          SERVICES: s3,sqs
+    executor:
+      name: node/default
+    description: "component tests"
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - asset-cache-v1-{{ arch }}-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
+      - run: npm run test:integration
+
   deploy:
     docker:
       - image: circleci/node:13
@@ -76,9 +96,13 @@ workflows:
     build-and-test:
       jobs:
         - build-and-test
+        - component-test:
+            requires:
+              - build-and-test
         - deploy_branch:
             requires:
                - build-and-test
+               - component-test
             context: "aws.amazon.com/alexjpaz/circleci"
             filters:
               branches:
@@ -86,6 +110,7 @@ workflows:
         - deploy:
             requires:
                - build-and-test
+               - component-test
             context: "aws.amazon.com/alexjpaz/circleci"
             filters:
               branches:
