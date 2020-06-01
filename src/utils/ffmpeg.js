@@ -8,7 +8,8 @@ const { logger } = require('./logger');
  * This hack is to allow the execution of both ffmpeg locally and on lambda
  */
 if(process.env.LAMBDA_TASK_ROOT) {
-  process.env.PATH += `:${process.env.LAMBDA_TASK_ROOT || './'}/opt`;
+  process.env.PATH += `:${process.env.LAMBDA_TASK_ROOT}/opt`;
+  process.env.PATH += `:./opt`;
 }
 
 /**
