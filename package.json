@@ -15,6 +15,7 @@
     "test:mocha": "NODE_ENV=test mocha -t 20000 --forbid-only --exclude='node_modules/**/*' 'src/**/*.spec.js'",
     "test:ui": "jest --testPathPattern ./ui/",
     "test": "npm run test:mocha && npm run test:ui",
+    "test:component": "npm run pretest && NODE_ENV=test npm run test:integration -- --invert --grep='@deployed-only'",
     "test:integration": "mocha -t 20000 --forbid-only --exclude='node_modules/**/*' 'test-integration/**/*.spec.js'",
     "prepack": "serverless print && serverless package"
   },

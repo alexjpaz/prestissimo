@@ -41,7 +41,7 @@ describe('transactions', () => {
 
     it('url', () => {
       let { url } = transaction.upload;
-      expect(url).to.include('x-amz-security-token');
+      expect(url).to.include('AWSAccessKeyId=');
     });
 
   });
@@ -61,7 +61,7 @@ describe('transactions', () => {
 
       let data = rsp.body;
 
-      expect(url).to.include('x-amz-security-token');
+      expect(url).to.include('AWSAccessKeyId=');
 
       const buffer = Buffer.from("test");
 

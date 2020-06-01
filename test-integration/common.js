@@ -60,3 +60,51 @@ module.exports = {
   request,
   aSecond,
 };
+
+if(!process.env.BASE_URL) {
+  const child_process = require('child_process');
+
+  let proc;
+
+  before(async () => {
+    console.log('Starting serverless offline');
+    process.env.NODE_ENV = 'test'; // seems bad :/
+    proc = child_process.spawn('node_modules/.bin/serverless', ['offline'], {
+      env: process.env
+    });
+
+    await new Promise((res, rej) => {
+      console.log('Waiting for serverless offline');
+      proc.stdout.on('data', (data) => {
+        if(data.toString().includes('server ready')) {
+          console.log('Ready');
+          res();
+        }
+      });
+
+      proc.stdout.on('data', (data) => {
+        //process.stdout.write(data.toString());
+      });
+
+      proc.stderr.on('data', (data) => {
+        //process.stderr.write(data.toString());
+      });
+
+      proc.on('close', rej);
+    });
+  });
+
+  before(async () => {
+    await request.get('/ping').expect(200);
+  });
+
+  after(async () => {
+    if(proc) {
+      proc.kill('SIGINT');
+    }
+  });
+}
+
+before(() => {
+  console.info(`baseUrl=${baseUrl}`);
+});

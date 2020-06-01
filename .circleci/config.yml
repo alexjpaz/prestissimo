@@ -40,12 +40,49 @@ jobs:
             - run: npm run build
             - run: npm run build:storybook
             - run: npm test
-            - run: npm pack
             - save_cache:
                 key: asset-cache-v1-{{ arch }}-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
                 paths:
                   - public
                   - opt
+
+  pack:
+    docker:
+      - image: circleci/node:13
+    executor:
+      name: node/default
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - asset-cache-v1-{{ arch }}-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
+      - node/with-cache:
+          steps:
+            - run: npm pack
+
+  component-test:
+    docker:
+      - image: circleci/node:13
+        environment:
+          AWS_ACCESS_KEY_ID: localstack
+          AWS_SECRET_ACCESS_KEY: localstack
+      - image: localstack/localstack
+        environment:
+          DEBUG: 1
+          SERVICES: s3,sqs
+    executor:
+      name: node/default
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - asset-cache-v1-{{ arch }}-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
+      - node/with-cache:
+          steps:
+            - run:
+                command: npm run test:component
+                no_output_timeout: "2m"
+
   deploy:
     docker:
       - image: circleci/node:13
@@ -76,9 +113,17 @@ workflows:
     build-and-test:
       jobs:
         - build-and-test
+        - pack:
+            requires:
+              - build-and-test
+        - component-test:
+            requires:
+              - build-and-test
         - deploy_branch:
             requires:
                - build-and-test
+               - component-test
+               - pack
             context: "aws.amazon.com/alexjpaz/circleci"
             filters:
               branches:
@@ -86,6 +131,8 @@ workflows:
         - deploy:
             requires:
                - build-and-test
+               - component-test
+               - pack
             context: "aws.amazon.com/alexjpaz/circleci"
             filters:
               branches:
