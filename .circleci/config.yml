@@ -40,12 +40,26 @@ jobs:
             - run: npm run build
             - run: npm run build:storybook
             - run: npm test
-            - run: npm pack
             - save_cache:
                 key: asset-cache-v1-{{ arch }}-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
                 paths:
                   - public
                   - opt
+
+  pack:
+    docker:
+      - image: circleci/node:13
+    executor:
+      name: node/default
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - asset-cache-v1-{{ arch }}-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
+      - node/with-cache:
+          steps:
+            - run: npm pack
+
   component-test:
     docker:
       - image: circleci/node:13
@@ -58,13 +72,16 @@ jobs:
           SERVICES: s3,sqs
     executor:
       name: node/default
-    description: "component tests"
     steps:
       - checkout
       - restore_cache:
           keys:
             - asset-cache-v1-{{ arch }}-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
-      - run: npm run test:integration
+      - node/with-cache:
+          steps:
+            - run:
+                command: npm run test:integration
+                no_output_timeout: "2m"
 
   deploy:
     docker:
@@ -96,6 +113,9 @@ workflows:
     build-and-test:
       jobs:
         - build-and-test
+        - pack:
+            requires:
+              - build-and-test
         - component-test:
             requires:
               - build-and-test
@@ -103,6 +123,7 @@ workflows:
             requires:
                - build-and-test
                - component-test
+               - pack
             context: "aws.amazon.com/alexjpaz/circleci"
             filters:
               branches:
@@ -111,6 +132,7 @@ workflows:
             requires:
                - build-and-test
                - component-test
+               - pack
             context: "aws.amazon.com/alexjpaz/circleci"
             filters:
               branches:
