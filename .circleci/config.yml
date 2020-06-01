@@ -80,7 +80,7 @@ jobs:
       - node/with-cache:
           steps:
             - run:
-                command: npm run test:integration
+                command: npm run test:component
                 no_output_timeout: "2m"
 
   deploy:

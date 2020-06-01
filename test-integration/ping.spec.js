@@ -16,7 +16,7 @@ describe('ping', () => {
     ;
   });
 
-  it('root @fails-locally', async () => {
+  it('root @deployed-only @fails-locally', async () => {
     await request.get('/')
       .set("Authorization", `Bearer ${token}`)
       .expect(200, /prestissimo/)
