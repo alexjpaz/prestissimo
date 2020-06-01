@@ -11,6 +11,15 @@ const {
 
 describe('@wip ui', () => {
 
+  it('html5fallback', async () => {
+    let stage = "/local";
+
+    let dom = await jsdom.JSDOM.fromURL(`${baseUrl}/html5-fallback`);
+    console.log(dom.window.document);
+    expect(dom.window.document.body.innerHTML).to.include('window.Prestissimo');
+    expect(dom.window.document.body.innerHTML).to.include(`"RouterBasename": "${stage}"`);
+  });
+
   describe('index.html', () => {
     let dom;
 
@@ -48,7 +57,7 @@ describe('@wip ui', () => {
     beforeEach(async () => {
       const virtualConsole = new jsdom.VirtualConsole();
 
-      dom = await jsdom.JSDOM.fromURL(`${baseUrl}/index.html?#/debug`, {
+      dom = await jsdom.JSDOM.fromURL(`${baseUrl}/debug`, {
         resources: 'usable',
         runScripts: "dangerously",
         virtualConsole

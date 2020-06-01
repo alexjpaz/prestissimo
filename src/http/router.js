@@ -14,6 +14,7 @@ const { Status } = require('./status');
 const { Transactions } = require('./transactions');
 const { Debug } = require('./debug');
 const { User } = require('./user');
+const { html5fallback } = require('./html5fallback');
 
 const defaultProps = () => ({
   s3: new AWS.S3(),
@@ -29,8 +30,6 @@ const Router = (props = defaultProps()) => {
   const app = express();
 
   const upload = multer({ dest: os.tmpdir() })
-
-  app.use(express.static('public'))
 
   app.get('/ping', (req, res, next) => {
     return res.send({
@@ -49,6 +48,20 @@ const Router = (props = defaultProps()) => {
   app.use('/restricted', [
     Debug()
   ]);
+
+  app.use((req, res, next) => {
+    if(req.originalUrl === "/index.html") {
+      return next();
+    }
+
+    if(req.originalUrl === "/") {
+      return next();
+    }
+
+    return express.static('public')(req, res, next);
+  });
+
+  app.get('*', html5fallback());
 
   return app;
 };

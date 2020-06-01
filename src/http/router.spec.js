@@ -1,3 +1,4 @@
+const express = require('express');
 const config = require('config');
 const sinon = require('sinon');
 const { expect } = require('chai');
@@ -23,15 +24,30 @@ describe('http/router', () => {
     sinon.spy(mockS3, 'getSignedUrlPromise');
     sinon.spy(mockS3, 'createPresignedPost');
 
-    request = supertest(Router({
+    const app = express();
+
+    // FAKE an aws request
+    app.use((req, res, next) => {
+      req.requestContext = {
+        stage: "/fake"
+      };
+
+      next();
+    });
+
+    app.use(Router({
       s3: mockS3
     }));
 
+    request = supertest(app);
+
     sinon.spy(fs, 'unlink');
+    sinon.spy(fs, 'readFile');
   });
 
   afterEach(() => {
     fs.unlink.restore();
+    fs.readFile.restore();
   });
 
   describe('public', () => {
@@ -46,7 +62,35 @@ describe('http/router', () => {
         .expect(200, /<html>/);
       ;
     });
+
+    it('main.js', async () => {
+      await request.get('/main.js')
+        .expect(200, /WEBPACK/);
+      ;
+    });
+
+    describe('html5fallback', () => {
+      let testUrls = [
+        '/some-html5-route',
+        '/index.html',
+        '/',
+      ];
+
+      for(let testUrl of testUrls) {
+        it(testUrl, async () => {
+          await request.get(testUrl)
+            .expect(200)
+            .expect(/<html>/)
+            .expect(/window.Prestissimo = {/)
+            .expect(/\"RouterBasename\": \"\/fake\"/)
+          ;
+
+          expect(fs.readFile.calledWith("public/index.html")).to.eql(true);
+        });
+      }
+    })
   });
+
 
   // SAMPLE REQUEST
   /*

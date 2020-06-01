@@ -7,17 +7,11 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.8.2/css/bulma.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
     <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
-    <script>
-        (function redirectToSlash() {
-            if(!(location.href.endsWith("/") || location.href.endsWith("#"))) {
-                console.warn("HTML5 not enabled. Falling back to hash routing");
-                location.assign(location.href + "#");
-                //location.reload();
-            }
-        })();
-    </script>
   </head>
   <body>
+    <script>
+        window.Prestissimo = {{ Prestissimo }};
+    </script>
     <div id='loader'>
       <section class="hero is-link is-fullheight">
         <div class="hero-body  has-text-centered">
