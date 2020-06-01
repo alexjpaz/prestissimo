@@ -5,6 +5,7 @@ import { withKnobs, button, text } from "@storybook/addon-knobs";
 
 import { App } from './App';
 
+import { PrestissimoApi } from '../helpers/PrestissimoApi';
 import { AppContext, defaultContextValue } from './AppContext';
 import { Auth0Provider } from './login/Auth0Context';
 
@@ -42,6 +43,8 @@ export const withMockServer = () => {
 };
 
 export const withLocalServer = () => {
+  let api = PrestissimoApi.standard();
+
   const endpoint = text("endpoint", "http://localhost:3000/local");
 
   button("process inbox", async () => {

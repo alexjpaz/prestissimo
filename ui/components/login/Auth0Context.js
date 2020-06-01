@@ -4,7 +4,7 @@ import createAuth0Client from "@auth0/auth0-spa-js";
 const DEFAULT_REDIRECT_CALLBACK = () =>
   window.history.replaceState({}, document.title, window.location.pathname);
 
-export const Auth0Context = React.createContext();
+export const Auth0Context = React.createContext({});
 export const useAuth0 = () => useContext(Auth0Context);
 export const Auth0Provider = ({
   children,
@@ -24,8 +24,15 @@ export const Auth0Provider = ({
 
       if (window.location.search.includes("code=") &&
           window.location.search.includes("state=")) {
-        const { appState } = await auth0FromHook.handleRedirectCallback();
-        onRedirectCallback(appState);
+
+        try {
+          const response = await auth0FromHook.handleRedirectCallback();
+
+          onRedirectCallback(response);
+        } catch(e) {
+          console.error("Failed to handle code/state. May be caused by a reload?");
+          throw e;
+        }
       }
 
       const isAuthenticated = await auth0FromHook.isAuthenticated();

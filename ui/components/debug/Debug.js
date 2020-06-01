@@ -6,8 +6,6 @@ import { PrestissimoApi } from '../../helpers/PrestissimoApi';
 
 import * as axios from 'axios';
 
-const usePing = () => {};
-
 export function Debug({ api = PrestissimoApi.standard() }) {
   const [data, setData] = React.useState(null);
 

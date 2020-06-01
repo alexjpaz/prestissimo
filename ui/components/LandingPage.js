@@ -6,14 +6,14 @@ import { Branding } from './branding/Branding';
 
 export function LandingPage() {
   return (
-    <section className="hero is-link is-fullheight-with-navbar">
+    <section className="hero is-link is-fullheight">
       <div className="hero-body">
         <div className="container has-text-centered">
           <p className="title is-size-1">
             <Branding />
           </p>
           <p className="subtitle">
-            <span>Going as fast as possible</span>
+            <span>Play as fast as possible</span>
           </p>
           <Link to='/login' className="button is-large is-warning">
             <span className='icon'>

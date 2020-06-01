@@ -18,6 +18,9 @@ export class PrestissimoApi {
     }
   }
 
+  async uploadManifest(manifest) {
+  };
+
   async ping() {
     try {
       const rsp = await this.client.get('/ping');
@@ -29,10 +32,21 @@ export class PrestissimoApi {
     }
   }
 
+  async debugProcessInbox() {
+  }
+
   static standard() {
+    return PrestissimoApi.fromEnvironment();
+  }
+
+  static fromEnvironment() {
+    // TODO
+    let baseURL = "./";
+    baseURL = "http://localhost:3000/local";
+
     return new PrestissimoApi({
       client: axios.create({
-        baseURL: "./" // TODO
+        baseURL,
       })
     })
   }

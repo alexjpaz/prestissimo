@@ -3,6 +3,8 @@ import { StaticRouter } from "react-router-dom";
 
 import { Debug } from "./Debug";
 
+import { PrestissimoApi } from '../../helpers/PrestissimoApi';
+
 export default {
   title: Debug.name,
 };
