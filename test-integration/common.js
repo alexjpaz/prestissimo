@@ -11,7 +11,13 @@ let request = supertest(baseUrl);
 
 const aSecond = (t = 1000) => new Promise(r => setTimeout(r, t));
 
+let accessToken = null;
+
 const getAccessToken = async () => {
+  if(accessToken) {
+    return accessToken;
+  }
+
   if(config && config.authorizer && config.authorizer.jwksUri.startsWith("file://")) {
     try {
       let path = config.authorizer.jwksUri.replace('file://','');
@@ -45,6 +51,8 @@ const getAccessToken = async () => {
         audience: "https://prestissimo.alexjpaz.com",
         grant_type: "client_credentials"
       });
+
+    let accessToken = rsp.body.access_token;
 
     return rsp.body.access_token;
   } catch(e) {
