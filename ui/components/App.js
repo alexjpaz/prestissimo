@@ -59,10 +59,6 @@ export function App() {
 
   return (
     <div data-test-id='App-root'>
-      <button onClick={e => auth0.logout()}>LOGOUT</button>
-      <button onClick={async e => {
-        console.log(await auth0.getIdTokenClaims());
-      }}>getToken</button>
       <Switch>
         <Route path="/" exact>
           <Redirect to="/home" />

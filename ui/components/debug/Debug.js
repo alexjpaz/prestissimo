@@ -2,11 +2,15 @@ import React from "react";
 
 import { Route } from "react-router-dom";
 
+import { useAuth0 } from '../login/Auth0Context';
+
 import { PrestissimoApi } from '../../helpers/PrestissimoApi';
 
 import * as axios from 'axios';
 
 export function Debug({ api = PrestissimoApi.standard() }) {
+  const auth0 = useAuth0();
+
   const [data, setData] = React.useState(null);
 
   React.useEffect(() => {
@@ -28,6 +32,10 @@ export function Debug({ api = PrestissimoApi.standard() }) {
               </p>
               <pre className="subtitle has-text-left">
                 {JSON.stringify(data, null, 2)}
+              </pre>
+              <pre className="subtitle has-text-left">
+                1
+                {JSON.stringify(auth0, null, 2)}
               </pre>
             </div>
           </div>

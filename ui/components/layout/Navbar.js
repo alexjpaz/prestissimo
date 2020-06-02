@@ -1,18 +1,32 @@
 import React from 'react';
 
+import { Link } from 'react-router-dom';
+
+import { useAuth0 } from '../login/Auth0Context';
 import { AppContext } from '../AppContext';
 import { Branding } from '../branding/Branding';
 
 export function NavbarProfile() {
-  const ctx = React.useContext(AppContext);
+  const auth0 = useAuth0();
 
-  console.log(ctx.user.photo);
+  if(!auth0.user) {
+    return (
+      null
+    );
+  }
+
+  let {
+    picture,
+    name
+  } = auth0.user;
 
   return (
-    <a className="navbar-item" href="#">
-      <span>{ctx.user.name} </span>
-      <img src={ctx.user.photo} height='32' width='32' />
-    </a>
+    <span className="navbar-item" href="#">
+      <Link to="/profile" className="button is-inverted">
+        <span>{name} </span>
+        <img src={picture} className='is-rounded' height='32' width='32' />
+      </Link>
+    </span>
   );
 }
 
