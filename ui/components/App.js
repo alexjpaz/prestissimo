@@ -19,6 +19,7 @@ import { UploadForm } from './UploadForm';
 import { AppContext } from './AppContext';
 
 import {
+  useAuth0,
   Auth0Provider,
 } from './login/Auth0Context';
 
@@ -53,10 +54,15 @@ export function Loading() {
 }
 
 export function App() {
+  const auth0 = useAuth0();
   const ctx = React.useContext(AppContext);
 
   return (
     <div data-test-id='App-root'>
+      <button onClick={e => auth0.logout()}>LOGOUT</button>
+      <button onClick={async e => {
+        console.log(await auth0.getIdTokenClaims());
+      }}>getToken</button>
       <Switch>
         <Route path="/" exact>
           <Redirect to="/home" />
@@ -88,6 +94,9 @@ export function DefaultApp() {
   // FIXME - global
   const RouterBasename = window.Prestissimo.RouterBasename;
 
+  // IMPORTANT: Must be a full url!
+  const redirect_uri = [window.location.origin, RouterBasename, '/login'].join('');
+
   // FIXME
   const config = {
     "domain": "alexjpaz.auth0.com",
@@ -108,7 +117,7 @@ export function DefaultApp() {
       <Auth0Provider
         domain={config.domain}
         client_id={config.clientId}
-        redirect_uri={[RouterBasename, '/login'].join('')}
+        redirect_uri={redirect_uri}
         onRedirectCallback={onRedirectCallback}
       >
       <App />

@@ -40,7 +40,8 @@ export function Login() {
 
   if(isAuthenticated) {
     return (
-      <Redirect to="/foobar" />
+      // FIXME
+      <Redirect to="/upload" />
     );
   }
 
