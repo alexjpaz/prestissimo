@@ -1,12 +1,15 @@
 import React, { useState, useEffect, useContext } from "react";
 import createAuth0Client from "@auth0/auth0-spa-js";
 
+const logger = console;
+
 const DEFAULT_REDIRECT_CALLBACK = () =>
   window.history.replaceState({}, document.title, window.location.pathname);
 
 export const Auth0Context = React.createContext({});
 export const useAuth0 = () => useContext(Auth0Context);
 export const Auth0Provider = ({
+  _window = window,
   children,
   onRedirectCallback = DEFAULT_REDIRECT_CALLBACK,
   ...initOptions
@@ -17,13 +20,15 @@ export const Auth0Provider = ({
   const [loading, setLoading] = useState(true);
   const [popupOpen, setPopupOpen] = useState(false);
 
+
   useEffect(() => {
     const initAuth0 = async () => {
       const auth0FromHook = await createAuth0Client(initOptions);
+
       setAuth0(auth0FromHook);
 
-      if (window.location.search.includes("code=") &&
-          window.location.search.includes("state=")) {
+      if (_window.location.search.includes("code=") &&
+          _window.location.search.includes("state=")) {
 
         try {
           const response = await auth0FromHook.handleRedirectCallback();
@@ -51,6 +56,7 @@ export const Auth0Provider = ({
   }, []);
 
   const loginWithPopup = async (params = {}) => {
+    logger.info("Login with Popup", params);
     setPopupOpen(true);
     try {
       await auth0Client.loginWithPopup(params);
