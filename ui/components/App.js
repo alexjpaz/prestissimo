@@ -7,6 +7,8 @@ import {
   Route,
 } from "react-router-dom"
 
+import { Transactions } from './transactions/Transactions';
+import { Dashboard } from './Dashboard';
 import { Debug } from './debug/Debug';
 
 import { LandingPage } from './LandingPage';
@@ -16,7 +18,7 @@ import { Navbar } from './layout/Navbar';
 
 import { UploadForm } from './UploadForm';
 
-import { AppContext } from './AppContext';
+import { AppContext, DefaultAppContextProvider } from './AppContext';
 
 import {
   useAuth0,
@@ -53,6 +55,16 @@ export function Loading() {
   );
 }
 
+export function Start() {
+  const { isAuthenticated } = useAuth0();
+
+  if(isAuthenticated) {
+    return <Redirect to="/home" />
+  } else {
+    return <Redirect to="/login" />
+  }
+}
+
 export function App() {
   const auth0 = useAuth0();
   const ctx = React.useContext(AppContext);
@@ -60,13 +72,21 @@ export function App() {
   return (
     <div data-test-id='App-root'>
       <Switch>
-        <Route path="/" exact>
-          <Redirect to="/home" />
-        </Route>
+        <Route path="/login" />
+        <Route path="/start" />
+        <Route render={() => <Navbar />} />
+      </Switch>
+      <Switch>
         <Route path="/start" exact>
-          <LandingPage />
+          <Start />
         </Route>
-        <Route path="/home" exact>
+        <Route path="/dashboard" exact>
+          <Dashboard />
+        </Route>
+        <Route path="/transactions/:transactionId">
+          <Transactions />
+        </Route>
+        <Route path="/about" exact>
           <LandingPage />
         </Route>
         <Route path="/login" exact>
@@ -76,11 +96,10 @@ export function App() {
           <Redirect to="/login" />
         </Route>
         <Route path="/upload" exact>
-          <Navbar />
           <UploadForm onUpload={ctx.uploadTrack} />
         </Route>
         <Debug />
-        <Route render={() => <Redirect to="/home" />} />
+        <Route render={() => <Redirect to="/start" />} />
       </Switch>
     </div>
   );
@@ -110,14 +129,16 @@ export function DefaultApp() {
 
   return (
     <Router basename={RouterBasename}>
-      <Auth0Provider
+      <DefaultAppContextProvider>
+        <Auth0Provider
         domain={config.domain}
         client_id={config.clientId}
         redirect_uri={redirect_uri}
         onRedirectCallback={onRedirectCallback}
       >
-      <App />
-      </Auth0Provider>
+          <App />
+        </Auth0Provider>
+      </DefaultAppContextProvider>
     </Router>
   );
 }

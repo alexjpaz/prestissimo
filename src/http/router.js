@@ -38,6 +38,11 @@ const Router = (props = defaultProps()) => {
     });
   });
 
+  app.use((req, res, next) => {
+    console.log(123)
+    next();
+  });
+
   app.use('/api', User());
 
   app.use('/api', [

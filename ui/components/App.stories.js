@@ -7,6 +7,7 @@ import { App } from './App';
 
 import { PrestissimoApi } from '../helpers/PrestissimoApi';
 import { AppContext, defaultContextValue } from './AppContext';
+import { Auth0Context } from './login/Auth0Context';
 import { Auth0Provider } from './login/Auth0Context';
 
 export default {
@@ -33,11 +34,20 @@ export const withMockServer = () => {
     uploadTrack: action('uploadTrack')
   };
 
+  let auth0 = {
+    user: {
+      name: "Fake User",
+      picture: "https://api.adorable.io/avatars/156/fake@fake.com.png"
+    }
+  };
+
   return (
     <MemoryRouter initialEntries={["/upload"]}>
-      <AppContext.Provider value={value}>
-        <App />
-      </AppContext.Provider>
+      <Auth0Context.Provider value={auth0}>
+        <AppContext.Provider value={value}>
+          <App />
+        </AppContext.Provider>
+      </Auth0Context.Provider>
     </MemoryRouter>
   );
 };

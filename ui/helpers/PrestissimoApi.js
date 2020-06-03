@@ -7,6 +7,28 @@ export class PrestissimoApi {
     this.client = client;
   }
 
+  async fetchTransactions() {
+    try {
+      const rsp = await this.client.get('/api/transactions');
+
+      return rsp.data;
+    } catch(e) {
+      logger.error(e.message);
+      throw e;
+    }
+  }
+
+  async fetchTransaction(transactionId) {
+    try {
+      const rsp = await this.client.get(`/api/transactions/${transactionId}`);
+
+      return rsp.data;
+    } catch(e) {
+      logger.error(e.message);
+      throw e;
+    }
+  }
+
   async status() {
     try {
       const rsp = await this.client.get('/api/status');

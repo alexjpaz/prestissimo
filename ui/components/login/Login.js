@@ -1,7 +1,9 @@
 import React from 'react';
-import { Switch, Route, Redirect } from "react-router-dom"
+import { Switch, Route, Redirect, Link } from "react-router-dom"
 
 import { useAuth0 } from './Auth0Context';
+
+import { Branding } from '../branding/Branding';
 
 export function FullscreenCenterHero({ children }) {
   return (
@@ -46,12 +48,21 @@ export function Login() {
   }
 
   return (
-    <section className="hero is-dark is-fullheight">
+    <section className="hero is-link is-fullheight">
       <div className="hero-body">
         <div className="container has-text-centered">
           <p className="title is-size-1">
-            <button className='button is-large' onClick={() => loginWithRedirect({})}>Log in</button>
+            <Branding />
           </p>
+          <p className="subtitle">
+            <span>Play as fast as possible</span>
+          </p>
+          <button className="button is-large is-warning" onClick={() => loginWithRedirect({})}>
+            <span className='icon'>
+              <i className='fas fa-play'></i>
+            </span>
+            <span>Login</span>
+          </button>
         </div>
       </div>
     </section>

@@ -20,7 +20,8 @@ module.exports = {
     extensions: ['*', '.js', '.jsx']
   },
   plugins: [new HtmlWebpackPlugin({
-    template: path.resolve(__dirname, 'index.ejs')
+    template: path.resolve(__dirname, 'index.ejs'),
+    inject: false, //
   })],
   devServer: {
     open: true

@@ -6,6 +6,20 @@ import { useAuth0 } from '../login/Auth0Context';
 import { AppContext } from '../AppContext';
 import { Branding } from '../branding/Branding';
 
+export function LogoutButton() {
+  const auth0 = useAuth0();
+
+  const logout = (e) => {
+    auth0.logout();
+  };
+
+  return (
+    <span className="navbar-item">
+      <button className='button is-info' onClick={logout}>Logout</button>
+    </span>
+  );
+}
+
 export function NavbarProfile() {
   const auth0 = useAuth0();
 
@@ -22,9 +36,11 @@ export function NavbarProfile() {
 
   return (
     <span className="navbar-item" href="#">
-      <Link to="/profile" className="button is-inverted">
+      <Link to="/profile" className="button is-inverted is-rounded">
         <span>{name} </span>
-        <img src={picture} className='is-rounded' height='32' width='32' />
+        <figure className="image is-32x32">
+          <img src={picture} className='is-rounded' />
+        </figure>
       </Link>
     </span>
   );
@@ -49,9 +65,8 @@ export function Navbar() {
 
       <div className='navbar-menu'>
         <div className="navbar-end">
-          <div className="navbar-item">
-            <NavbarProfile />
-          </div>
+          <NavbarProfile />
+          <LogoutButton />
         </div>
       </div>
     </nav>

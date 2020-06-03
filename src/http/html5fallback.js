@@ -10,6 +10,8 @@ exports.html5fallback = () => {
         RouterBasename = "/" + RouterBasename;
       }
 
+      let publicPath = "/" + req.requestContext.stage;
+
       const file = await fs.readFile('public/index.html');
 
       const Prestissimo = {
@@ -17,7 +19,8 @@ exports.html5fallback = () => {
       };
 
       const html = file.toString()
-        .replace(/{{ Prestissimo }}/, JSON.stringify(Prestissimo, null, 2));
+        .replace(/{{ Prestissimo }}/g, JSON.stringify(Prestissimo, null, 2))
+        .replace(/{{ publicPath }}/g, publicPath)
       ;
 
       res.send(html);
