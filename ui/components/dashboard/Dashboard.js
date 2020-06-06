@@ -2,9 +2,9 @@ import React from 'react';
 
 import { Link } from "react-router-dom"
 
-import { PrestissimoApi } from '../helpers/PrestissimoApi';
+import { PrestissimoApi } from '../../helpers/PrestissimoApi';
 
-import { AppContext } from './AppContext';
+import { AppContext } from '../AppContext';
 
 export function TransactionList({ items }) {
   if(!items) {
@@ -12,8 +12,8 @@ export function TransactionList({ items }) {
   }
 
   return (
-    <div class="list is-hoverable">
-      { items.map(item => <TransactionListItem item={item} />) }
+    <div className="list is-hoverable">
+      { items.map(item => <TransactionListItem key={item.transactionId} item={item} />) }
     </div>
   );
 }

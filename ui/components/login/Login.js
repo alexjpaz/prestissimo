@@ -42,8 +42,7 @@ export function Login() {
 
   if(isAuthenticated) {
     return (
-      // FIXME
-      <Redirect to="/upload" />
+      <Redirect to="/home" />
     );
   }
 

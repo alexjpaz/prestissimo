@@ -8,7 +8,7 @@ import {
 } from "react-router-dom"
 
 import { Transactions } from './transactions/Transactions';
-import { Dashboard } from './Dashboard';
+import { Dashboard } from './dashboard/Dashboard';
 import { Debug } from './debug/Debug';
 
 import { LandingPage } from './LandingPage';
@@ -80,6 +80,9 @@ export function App() {
         <Route path="/start" exact>
           <Start />
         </Route>
+        <Route path="/home" exact>
+          <Redirect to="/dashboard" />
+        </Route >
         <Route path="/dashboard" exact>
           <Dashboard />
         </Route>
