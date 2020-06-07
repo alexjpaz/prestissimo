@@ -35,6 +35,18 @@ export class DefaultAppContextProvider extends React.Component {
       try {
         const endpoint = "http://localhost:3000/local";
 
+        this.setState({
+          ...state,
+          progress: "0",
+          uploadThing: {
+            item: {
+              status: "PREPARING",
+            },
+          },
+        });
+
+
+
         let rsp = await fetch(`${endpoint}/api/transactions`, {
           method: "PUT",
         })
@@ -72,8 +84,8 @@ export class DefaultAppContextProvider extends React.Component {
 
         // FIXME - Bad
         // Exponential backoff
-        let MAX_RETRIES = 10;
-        let MAX_TIMEOUT = 10000;
+        let MAX_RETRIES = 20;
+        let MAX_TIMEOUT = 4000;
         let timeout;
         let retries = 0;
 
@@ -100,13 +112,13 @@ export class DefaultAppContextProvider extends React.Component {
 
           if(!terminalStates.includes(transactionStatus.data.item.status)) {
             retries++;
-            timeout = Math.min(MAX_TIMEOUT, Math.pow(2, retries) * 2000);
+            timeout = Math.min(MAX_TIMEOUT, Math.pow(2, retries) * 500);
 
             console.log(timeout);
 
             setTimeout(check, timeout);
           } else {
-            this.setState({
+            that.setState({
               ...state,
               progress: "100",
             });
