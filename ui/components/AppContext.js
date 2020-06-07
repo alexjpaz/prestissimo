@@ -45,9 +45,29 @@ export class DefaultAppContextProvider extends React.Component {
         manifest.userId = rsp.data.userId;
         manifest.transactionId = rsp.data.transactionId;
 
+        this.setState({
+          ...state,
+          progress: "25",
+          uploadThing: {
+            item: {
+              status: "UPLOADING",
+            },
+          },
+        });
+
         await fetch(upload.url, {
           method: upload.httpMethod,
           body: JSON.stringify(manifest),
+        });
+
+        this.setState({
+          ...state,
+          progress: "50",
+          uploadThing: {
+            item: {
+              status: "CREATED",
+            },
+          },
         });
 
         // FIXME - Bad
@@ -56,9 +76,18 @@ export class DefaultAppContextProvider extends React.Component {
         let MAX_TIMEOUT = 10000;
         let timeout;
         let retries = 0;
+
+        let that = this;
+
         (async function check() {
           let transactionStatus = await fetch(`${endpoint}/api/transactions/${rsp.data.transactionId}`)
             .then(r => r.json());
+
+          that.setState({
+            ...state,
+            progress: 75 + retries + "",
+            uploadThing: transactionStatus.data,
+          });
 
           let terminalStates = [
             'SUCCESS',
@@ -76,6 +105,11 @@ export class DefaultAppContextProvider extends React.Component {
             console.log(timeout);
 
             setTimeout(check, timeout);
+          } else {
+            this.setState({
+              ...state,
+              progress: "100",
+            });
           }
         })();
       } catch(e) {

@@ -14,7 +14,7 @@ export function Upload() {
         return (
           <>
           <UploadForm onUpload={ctx.uploadTrack} />
-          { ctx.uploadThing &&
+          { ctx.uploadThing && ctx.uploadThing.item &&
               <div className='section'>
               <progress className="progress is-primary" value={ ctx.progress } max="100">{ ctx.progress }%</progress>
               <button className='button is-fullwidth' disabled={true}>{ ctx.uploadThing.item.status }</button>
