@@ -2,7 +2,7 @@ import React from 'react';
 
 import { Link } from "react-router-dom"
 
-import { Branding } from './branding/Branding';
+import { LandingPageBranding } from './branding/LandingPageBranding';
 
 export function LandingPage() {
   return (
@@ -10,7 +10,7 @@ export function LandingPage() {
       <div className="hero-body">
         <div className="container has-text-centered">
           <p className="title is-size-1">
-            <Branding />
+            <LandingPage />
           </p>
           <p className="subtitle">
             <span>Play as fast as possible</span>

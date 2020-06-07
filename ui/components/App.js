@@ -16,7 +16,7 @@ import { Login } from './login/Login';
 
 import { Navbar } from './layout/Navbar';
 
-import { UploadForm } from './UploadForm';
+import { Upload } from './upload/Upload';
 
 import { AppContext, DefaultAppContextProvider } from './AppContext';
 
@@ -99,7 +99,7 @@ export function App() {
           <Redirect to="/login" />
         </Route>
         <Route path="/upload" exact>
-          <UploadForm onUpload={ctx.uploadTrack} />
+          <Upload />
         </Route>
         <Debug />
         <Route render={() => <Redirect to="/start" />} />

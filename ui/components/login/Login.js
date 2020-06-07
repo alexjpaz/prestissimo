@@ -3,7 +3,7 @@ import { Switch, Route, Redirect, Link } from "react-router-dom"
 
 import { useAuth0 } from './Auth0Context';
 
-import { Branding } from '../branding/Branding';
+import { LandingPageBranding } from '../branding/LandingPageBranding';
 
 export function FullscreenCenterHero({ children }) {
   return (
@@ -51,7 +51,7 @@ export function Login() {
       <div className="hero-body">
         <div className="container has-text-centered">
           <p className="title is-size-1">
-            <Branding />
+            <LandingPageBranding />
           </p>
           <p className="subtitle">
             <span>Play as fast as possible</span>

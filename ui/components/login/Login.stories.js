@@ -35,5 +35,3 @@ export const withDefault = () => {
     </Auth0Provider>
   );
 };
-
-
