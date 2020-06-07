@@ -10,7 +10,7 @@ exports.html5fallback = () => {
         RouterBasename = "/" + RouterBasename;
       }
 
-      let publicPath = "/" + req.requestContext.stage;
+      let publicPath = "/" + req.requestContext.stage + "/";
 
       const file = await fs.readFile('public/index.html');
 

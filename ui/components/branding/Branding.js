@@ -6,8 +6,13 @@ const styles = {
   }
 };
 
+const brandLogo = window.Prestissimo.RouterBasename + "/assets/logo.svg";
+
 export function Branding() {
   return (
-    <span style={styles.branding}>PRESTISSIMO</span>
+    <React.Fragment>
+      <img src={ brandLogo }  />
+      <span style={styles.branding}>PRESTISSIMO</span>
+    </React.Fragment>
   );
 }

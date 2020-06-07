@@ -45,6 +45,7 @@
     "babel-loader": "^8.1.0",
     "canvas": "^2.6.1",
     "chai": "^4.2.0",
+    "copy-webpack-plugin": "^6.0.2",
     "html-webpack-plugin": "^4.3.0",
     "husky": "^4.2.5",
     "jest": "^26.0.1",
