@@ -30,7 +30,7 @@ const waitFor = async (fn) => {
             await fn();
             ready = true;
         } catch(e) {
-            logger.error(e);
+            logger.error(e.message);
             await aSecond();
         }
     }
@@ -56,10 +56,19 @@ const waitForS3Request = () => {
     });
 };
 
+const waitForDynamoDB = () => {
+    const dynamodb = new AWS.DynamoDB();
+    return waitFor(async () => {
+        logger.info("Attempting to connect to DynamoDB");
+        await dynamodb.listTables().promise();
+    });
+};
+
 const wait = async () => {
     const promises = [
         waitForS3(),
-        waitForS3Request()
+        waitForS3Request(),
+        waitForDynamoDB(),
     ];
 
     await new Promise((res, rej) => {
