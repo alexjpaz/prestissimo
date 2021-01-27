@@ -20,3 +20,6 @@ TBD - See http://prestissimo.alexjpaz.com/
 ## Supported Conversions
 
 TBD see ffmpeg static build for linux
+
+## Links
+[Attributions](./ATTRIBUTIONS.md)

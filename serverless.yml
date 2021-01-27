@@ -40,6 +40,12 @@ provider:
 custom:
   bucketName: ${self:service}.${self:provider.stage}
 
+  debugRoute:
+    local:
+      http:
+        path: "/restricted/{proxy+}"
+        method: any
+
 plugins:
   - serverless-offline
 
@@ -57,10 +63,7 @@ functions:
           path: "/api/{proxy+}"
           method: any
           authorizer: authorizer
-      - http:
-          path: "/restricted/{proxy+}"
-          method: any
-          authorizer: authorizer
+      - ${self:custom.debugRoute.${self:provider.stage}, ''}
 
   authorizer:
     handler: src/http/index.authorizer

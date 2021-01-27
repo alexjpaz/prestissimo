@@ -1,32 +1,60 @@
 import React from 'react';
+import { MemoryRouter } from "react-router-dom"
 import { action } from '@storybook/addon-actions';
 import { withKnobs, button, text } from "@storybook/addon-knobs";
 
 import { App } from './App';
 
-import { AppContext } from './AppContext';
+import { PrestissimoApi } from '../helpers/PrestissimoApi';
+import { AppContext, defaultContextValue } from './AppContext';
+import { Auth0Context } from './login/Auth0Context';
+import { Auth0Provider } from './login/Auth0Context';
 
 export default {
   title: App.name,
   decorators: [withKnobs]
 };
 
-export const withMockServer = () => {
+export const withNoAuthentication = () => {
   let value = {
-    user: {
-      name: "Test User",
-    },
-    uploadTrack: action('uploadTrack')
   };
 
   return (
-    <AppContext.Provider value={value}>
-      <App />
-    </AppContext.Provider>
+    <MemoryRouter>
+      <AppContext.Provider value={value}>
+        <App />
+      </AppContext.Provider>
+    </MemoryRouter>
+  );
+};
+
+export const withMockServer = () => {
+  let value = {
+    ...defaultContextValue,
+    uploadTrack: action('uploadTrack')
+  };
+
+  let auth0 = {
+    user: {
+      name: "Fake User",
+      picture: "https://api.adorable.io/avatars/156/fake@fake.com.png"
+    }
+  };
+
+  return (
+    <MemoryRouter initialEntries={["/upload"]}>
+      <Auth0Context.Provider value={auth0}>
+        <AppContext.Provider value={value}>
+          <App />
+        </AppContext.Provider>
+      </Auth0Context.Provider>
+    </MemoryRouter>
   );
 };
 
 export const withLocalServer = () => {
+  let api = PrestissimoApi.standard();
+
   const endpoint = text("endpoint", "http://localhost:3000/local");
 
   button("process inbox", async () => {
@@ -111,8 +139,10 @@ export const withLocalServer = () => {
   };
 
   return (
-    <AppContext.Provider value={value}>
-      <App />
-    </AppContext.Provider>
+    <MemoryRouter initialEntries={["/upload"]}>
+      <AppContext.Provider value={value}>
+        <App />
+      </AppContext.Provider>
+    </MemoryRouter>
   );
 };

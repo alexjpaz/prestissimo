@@ -85,6 +85,14 @@ export function UploadForm({ onUpload }) {
     setManifest({ manifest });
   };
 
+  const isSubmitDisabled = () => {
+    if(form.title) {
+      return false;
+    }
+
+    return true;
+  };
+
   return (
     <div data-testid='UploadForm'>
       <section className="hero is-primary">
@@ -128,10 +136,10 @@ export function UploadForm({ onUpload }) {
               </div>
               <div className="field is-grouped is-grouped-right">
                 <div className="control">
-                  <button className="button is-primary">Submit</button>
+                  <button className="button is-primary" disabled={isSubmitDisabled()}>Submit</button>
                 </div>
                 <div className="control">
-                  <button className="button is-default is-light">Cancel</button>
+                  <button className="button is-default is-light"i>Clear</button>
                 </div>
               </div>
             </div>

@@ -1,0 +1,28 @@
+import React from 'react';
+
+import { Link } from "react-router-dom"
+
+import { LandingPageBranding } from './branding/LandingPageBranding';
+
+export function LandingPage() {
+  return (
+    <section className="hero is-link is-fullheight">
+      <div className="hero-body">
+        <div className="container has-text-centered">
+          <p className="title is-size-1">
+            <LandingPage />
+          </p>
+          <p className="subtitle">
+            <span>Play as fast as possible</span>
+          </p>
+          <Link to='/login' className="button is-large is-warning">
+            <span className='icon'>
+              <i className='fas fa-play-circle'></i>
+            </span>
+            <span>Get Started</span>
+          </Link>
+        </div>
+      </div>
+    </section>
+  );
+}
