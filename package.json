@@ -51,7 +51,7 @@
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "serverless": "^1.70.0",
-    "serverless-offline": "^6.1.5",
+    "serverless-offline": "^12.0.3",
     "sinon": "^9.0.2",
     "supertest": "^4.0.2",
     "webpack": "^4.43.0",
