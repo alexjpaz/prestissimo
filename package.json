@@ -47,7 +47,7 @@
     "html-webpack-plugin": "^4.3.0",
     "husky": "^4.2.5",
     "jest": "^26.0.1",
-    "mocha": "^7.1.2",
+    "mocha": "^10.2.0",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "serverless": "^1.70.0",
